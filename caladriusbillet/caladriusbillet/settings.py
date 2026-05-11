@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'account'
+    'rest_framework',
+    'account',
+    'ticket'
 ]
 
 MIDDLEWARE = [
@@ -116,3 +118,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# My USER MODEL
+AUTH_USER_MODEL = 'account.CustomUser'
