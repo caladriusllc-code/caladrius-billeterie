@@ -15,6 +15,17 @@ class CustomUser(AbstractUser):
     country = models.CharField(max_length=100, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
 
+    Role_choices = (
+        ('Organisateur', 'Oorganisateur'), 
+        ('utilisateur', 'utilisateur'),
+        ('admin', 'administrateur'),
+    )
+
+    role = models.CharField(max_length=20, choices=Role_choices, default='utilisateur')
+    is_organisateur = models.BooleanField(default=False)
+    organisation_name = models.CharField(max_length=200, blank=True, null=True)
+
+
     def __str__(self):
-        return self.username
+        return f"{self.username} - {self.role}"
     
