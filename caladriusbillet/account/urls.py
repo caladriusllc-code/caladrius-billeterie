@@ -1,26 +1,20 @@
 from django.urls import path
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView
+)
 from .views import (
-    home, 
     CreateUserView, 
-    OrganisateurDashboardView, 
-    OrganisateurLoginView, 
-    OrganisateurLogoutView, 
-    OrganisateurRegisterView, 
-    CheckAuthStatusView,
-    UtilisateurRegisterView,    
-    UtilisateurLoginView,         
-    UtilisateurProfileView        
+    CustomTokenRefreshView,
+    LoginView     
 )
 
 urlpatterns = [
-    path('', home, name='home'),
     path('create/', CreateUserView.as_view(), name='create_user'),
-    path('organisateur/register/', OrganisateurRegisterView.as_view(), name='organisateur_register'),
-    path('organisateur/login/', OrganisateurLoginView.as_view(), name='organisateur_login'),
-    path('organisateur/dashboard/', OrganisateurDashboardView.as_view(), name='organisateur_dashboard'),
-    path('organisateur/logout/', OrganisateurLogoutView.as_view(), name='organisateur_logout'),
-    path('auth/status/', CheckAuthStatusView.as_view(), name='auth_status'), 
-    path('utilisateur/register/', UtilisateurRegisterView.as_view(), name='utilisateur_register'), 
-    path('utilisateur/login/', UtilisateurLoginView.as_view(), name='utilisateur_login'),          
-    path('utilisateur/profile/', UtilisateurProfileView.as_view(), name='utilisateur_profile'),    
+    path('login/', LoginView.as_view(), name='user_login'),
+    path('token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
+
+    # JWT Tokens endpoints
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  
 ]
