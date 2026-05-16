@@ -3,14 +3,16 @@ from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticated  # Un seul import
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import CustomerClassSerializer
 from django.utils.translation import gettext_lazy as _
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .models import CustomUser
-from .serializers import OrganisateurSerializer  # Supprimé OrganisateurLoginSerializer (non utilisé)
+from .serializers import OrganisateurSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from .serializers import UtilisateurSerializer
+
 
 
 # Create your views here.
@@ -52,7 +54,6 @@ class CreateUserView(APIView):
             )
 
 
-# ✅ CORRIGÉ : OrganisateurRegisterView est maintenant au bon endroit (hors de CreateUserView)
 class OrganisateurRegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -103,14 +104,9 @@ class OrganisateurRegisterView(APIView):
 
 
 class OrganisateurLoginView(APIView):
-    """
-    Vue pour la connexion d'un organisateur (API REST)
-    URL: POST /api/organisateur/login/
-    """
     permission_classes = [AllowAny]
     
     def post(self, request):
-        # Récupérer les identifiants
         username = request.data.get('username')
         password = request.data.get('password')
         
@@ -122,13 +118,10 @@ class OrganisateurLoginView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-        # Authentifier l'utilisateur
+       
         user = authenticate(request, username=username, password=password)
         
-        # Vérifier si l'utilisateur existe et est un organisateur
         if user is not None and user.is_organisateur:
-            # Vérifier si le compte est actif
             if not user.is_active:
                 return Response(
                     {
@@ -138,7 +131,6 @@ class OrganisateurLoginView(APIView):
                     status=status.HTTP_401_UNAUTHORIZED
                 )
             
-            # Générer les tokens JWT
             refresh = RefreshToken.for_user(user)
             
             return Response(
@@ -171,17 +163,12 @@ class OrganisateurLoginView(APIView):
 
 
 class OrganisateurDashboardView(APIView):
-    """
-    Vue pour le dashboard de l'organisateur (API REST)
-    URL: GET /api/organisateur/dashboard/
-    """
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
         user = request.user
         
-        # Vérifier si l'utilisateur est un organisateur
         if not user.is_organisateur:
             return Response(
                 {
@@ -191,7 +178,6 @@ class OrganisateurDashboardView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        # Données du dashboard
         dashboard_data = {
             "success": True,
             "organisateur": {
@@ -217,10 +203,6 @@ class OrganisateurDashboardView(APIView):
 
 
 class OrganisateurLogoutView(APIView):
-    """
-    Vue pour la déconnexion (API REST)
-    URL: POST /api/organisateur/logout/
-    """
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     
@@ -249,10 +231,6 @@ class OrganisateurLogoutView(APIView):
 
 
 class CheckAuthStatusView(APIView):
-    """
-    Vérifier si l'utilisateur est authentifié et son rôle
-    URL: GET /api/auth/status/
-    """
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     
@@ -270,6 +248,186 @@ class CheckAuthStatusView(APIView):
                     "role": user.role,
                     "is_organisateur": user.is_organisateur,
                     "is_verified": user.is_verified,
+                }
+            },
+            status=status.HTTP_200_OK
+        )
+    
+
+class UtilisateurRegisterView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = UtilisateurSerializer(data=request.data)  # ← Utiliser serializer
+        
+        try:
+            if serializer.is_valid():
+                user = serializer.save()
+                refresh = RefreshToken.for_user(user)
+                return Response(
+                    {
+                        "success": True,
+                        "message": _("Votre compte a été créé avec succès."),
+                        "user": {
+                            "id": str(user.id),
+                            "username": user.username,
+                            "email": user.email,
+                            "first_name": user.first_name,
+                            "last_name": user.last_name,
+                            "role": user.role,
+                            "is_organisateur": user.is_organisateur
+                        },
+                        "tokens": {
+                            "refresh": str(refresh),
+                            "access": str(refresh.access_token),
+                        }
+                    },
+                    status=status.HTTP_201_CREATED
+                )
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "errors": serializer.errors,
+                        "message": _("La création du compte a échoué.")
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except Exception as e:
+            return Response(
+                {
+                    "success": False,
+                    "error": str(e),
+                    "message": _("Une erreur inattendue s'est produite.")
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class UtilisateurLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        if not username or not password:
+            return Response(
+                {
+                    "success": False,
+                    "message": _("Veuillez fournir un nom d'utilisateur/email et un mot de passe.")
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None and not user.is_organisateur:
+            if not user.is_active:
+                return Response(
+                    {
+                        "success": False,
+                        "message": _("Votre compte est désactivé.")
+                    },
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+            
+            refresh = RefreshToken.for_user(user)
+            
+            return Response(
+                {
+                    "success": True,
+                    "message": _(f"Bienvenue {user.username} !"),
+                    "user": {
+                        "id": str(user.id),
+                        "username": user.username,
+                        "email": user.email,
+                        "role": user.role,
+                        "is_organisateur": user.is_organisateur
+                    },
+                    "tokens": {
+                        "refresh": str(refresh),
+                        "access": str(refresh.access_token),
+                    }
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": _("Nom d'utilisateur/email ou mot de passe incorrect.")
+                },
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+
+class UtilisateurProfileView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        user = request.user
+
+        
+        if user.is_organisateur:
+            return Response(
+                {
+                    "success": False,
+                    "message": _("Cette page est réservée aux utilisateurs.")
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        return Response(
+            {
+                "success": True,
+                "user": {
+                    "id": str(user.id),
+                    "username": user.username,
+                    "email": user.email,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "phone_number": user.phone_number,
+                    "date_of_birth": user.date_of_birth,
+                    "address": user.address,  
+                    "city": user.city,
+                    "country": user.country,
+                    "is_verified": user.is_verified,
+                    "date_joined": user.date_joined,
+                }
+            },
+            status=status.HTTP_200_OK
+        )
+    
+    def put(self, request):
+        user = request.user
+        
+        if user.is_organisateur:
+            return Response(
+                {"success": False, "message": _("Non autorisé")},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        editable_fields = ['first_name', 'last_name', 'phone_number','date_of_birth', 'address', 'city', 'country'] 
+        
+        for field in editable_fields:
+            if field in request.data:
+                setattr(user, field, request.data[field])
+        
+        user.save()
+        
+        return Response(
+            {
+                "success": True,
+                "message": _("Profil mis à jour avec succès."),
+                "user": {
+                    "id": str(user.id),
+                    "username": user.username,
+                    "email": user.email,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "phone_number": user.phone_number,
                 }
             },
             status=status.HTTP_200_OK
