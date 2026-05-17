@@ -1,14 +1,15 @@
 <template>
-    <div class="main-container">
+    <div class="main-container" ref="mainContainer">
         <div class="pic-container">
-            <img src="../assets/images/Copilot_20260517_151633.png" alt="">
+            <img src="../assets/images/Copilot_20260517_151633.png" alt="Event Banner">
+            <div class="pic-title-overlay">
+                <h1>Gala Night of Hilarious Comedy <span>at the Club</span></h1>
+            </div>
         </div>
         
-        <div class="info-container w-full flex flex-2/3 gap-2">
-            
-            <div class="general-info w-full flex flex-col gap-2">
-                <h3>Gala Night of Hilarious comedy day the club</h3>
-                <div class="date-local w-full flex flex-col gap-4">
+        <div class="info-container w-full flex flex-2/3 items-center gap-2">
+            <div class="general-info w-full h-full flex flex-col gap-2">
+                <div class="date-local w-full flex flex-col gap-8">
                     <span class="flex gap-2 items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
@@ -30,6 +31,7 @@
                 <p>260 places disponibles</p>
             </div>
         </div>
+
         <div class="event-details">
             <h3>Description de l'évènement</h3>
             <p>
@@ -41,30 +43,56 @@
                 Recusandae ex sint aspernatur nam.
             </p>
         </div>
-        <div class="btn-frame">
-            <mainButton/>
+
+        <!-- C'est ce wrapper qu'on observe désormais -->
+        <div class="btn-frame-wrapper" ref="btnWrapper">
+            <div class="btn-frame flex flex-2/3 items-center justify-center gap-4" :class="{ floating: isFloating }">
+                <mainButton/>
+                <likeButton/>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import mainButton from '../components/buttons/mainButton.vue';
+import likeButton from '~/components/buttons/likeButton.vue';
+
 export default {
-    components:{
+    components: {
         mainButton,
+        likeButton
+    },
+    data() {
+        return {
+            isFloating: true
+        }
+    },
+    mounted() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                // Si le conteneur naturel des boutons est visible à l'écran,
+                // on désactive le mode flottant. Sinon, on l'active.
+                this.isFloating = !entry.isIntersecting;
+            });
+        }, { 
+            threshold: 0.01 // Déclenchement dès que le premier pixel du conteneur apparaît
+        });
+
+        if (this.$refs.btnWrapper) {
+            observer.observe(this.$refs.btnWrapper);
+        }
     }
 }
-
 </script>
 
 <style scoped>
-.info-container{
-    padding: 0.5rem;
-    background: var(--tertiary-color, #222222);
+.info-container {
+    background: var(--background-color);
     color: #fff;
 }
 
-.price-info{
+.price-info {
     padding: 0.5rem;
     background: var(--glass-bg);
     display: flex;
@@ -75,7 +103,7 @@ export default {
     border-radius: 1rem;
 }
 
-.date-local{
+.date-local {
     padding: 0.5rem;
     background: var(--glass-bg);
     display: flex;
@@ -84,30 +112,30 @@ export default {
     border-radius: 1rem;
 }
 
-.date-local span{
-    font-size: 0.7rem;
+.date-local span {
+    font-size: 0.9rem;
     font-weight: 500;
     color: var(--secondary-light-color);
 }
 
-.date-local span svg{
+.date-local span svg {
     font-weight: 500;
     color: var(--primary-color);
 }
 
-.price-info span{
+.price-info span {
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--primary-color);
 }   
 
-.price-info p{
-    font-size: 0.7rem;
+.price-info p {
+    font-size: 0.9rem;
     font-weight: 400;
     color: var(--secondary-light-color);
 }
 
-.event-details{
+.event-details {
     padding: 0.5rem;
     background: var(--glass-bg);
     border-radius: 1rem;
@@ -116,15 +144,63 @@ export default {
     gap: 0.5rem;
 }
 
-.event-details h3{
+.event-details h3 {
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--secondary-light-color);
 }
 
-.event-details p{
+.event-details p {
     font-size: 1rem;
     font-weight: 400;
     color: var(--my-white);
+}
+
+.btn-frame-wrapper {
+    width: 100%;
+    height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin-top: 1rem;
+}
+
+.btn-frame {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s ease-in-out;
+}
+
+/* Mode flottant : ancré en bas, centré, avec animation de remontée */
+.btn-frame.floating {
+    width: 90%;
+    height: 60px;
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    /* Centre horizontalement sans bouger de la droite */
+    transform: translateX(-50%);
+    border-radius: 1rem;
+    z-index: 1000;
+    padding: 1rem;
+    
+    /* Animation venant du bas */
+    animation: slideUpFromBottom 0.4s ease-out;
+}
+
+/* Définition de l’animation : départ en bas, arrivée à sa position finale */
+@keyframes slideUpFromBottom {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(100%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 }
 </style>

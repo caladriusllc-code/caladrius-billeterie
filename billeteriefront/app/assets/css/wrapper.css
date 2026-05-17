@@ -27,6 +27,16 @@
     width: 100%;
     overflow: hidden;      /* Évite les débordements */
     border-radius: 4px;
+    position: relative;
+}
+
+.pic-container::after {
+    content: "";
+    position: absolute;
+    inset: 0; /* Prend tout l'espace de la boîte */
+    /* Dégradé du noir (#181818) vers le transparent */
+    background: linear-gradient(to top, #181818 0%, rgba(24, 24, 24, 0) 100%);
+    pointer-events: none; /* Permet de cliquer à travers au besoin */
 }
 
 .pic-container img {
@@ -34,6 +44,27 @@
     height: 100%;
     object-fit: cover;     /* L'image remplit le cadre sans se déformer (recadrage si nécessaire) */
     display: block;
+}
+
+/* Le nouveau style pour le titre */
+.pic-title-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.5rem;
+    z-index: 2; /* Devant le dégradé */
+}
+
+.pic-title-overlay h1 {
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.pic-title-overlay h1 span {
+    color: var(--primary-color);
 }
 
 .info-container{
