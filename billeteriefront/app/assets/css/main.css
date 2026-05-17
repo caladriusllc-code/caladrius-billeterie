@@ -1,7 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
 @import '../css/wrapper.css';
 @import "tailwindcss";
 
@@ -14,13 +11,14 @@
     --tertiary-color:#222222;
     --background-color: #181818;
     --my-white: #fff;
+    --secondary-light-color: #dfe0ca;
     --background-green-color: #3b8d50;
 
 
     --glass-bg: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.2);
     /* About my different fonts */
-    --font-primary: 'Inter', sans-serif;
+    --font-primary: 'Inter+Tight', sans-serif;
     --font-secondary: 'Instrument+Sans', sans-serif;
 
     /* Font size */
@@ -32,5 +30,18 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'DM Sans', sans-serif;
+    font-family: "Inter Tight", sans-serif;
+}
+
+button{
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 999px;
 }
