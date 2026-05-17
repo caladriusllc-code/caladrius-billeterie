@@ -47,41 +47,45 @@
         <!-- C'est ce wrapper qu'on observe désormais -->
         <div class="btn-frame-wrapper" ref="btnWrapper">
             <div class="btn-frame flex flex-2/3 items-center justify-center gap-4" :class="{ floating: isFloating }">
-                <mainButton/>
+                <mainButton @click="isCheckoutModalOpen = true"/>
                 <likeButton/>
             </div>
         </div>
+        <checkoutModal :isOpen="isCheckoutModalOpen" @close="isCheckoutModalOpen = false"/>
     </div>
 </template>
 
 <script>
 import mainButton from '../components/buttons/mainButton.vue';
 import likeButton from '~/components/buttons/likeButton.vue';
+import checkoutModal from '~/components/modales/checkoutModal.vue';
 
 export default {
     components: {
         mainButton,
-        likeButton
+        likeButton,
+        checkoutModal
     },
-    data() {
-        return {
-            isFloating: true
-        }
-    },
-    mounted() {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                // Si le conteneur naturel des boutons est visible à l'écran,
-                // on désactive le mode flottant. Sinon, on l'active.
-                this.isFloating = !entry.isIntersecting;
-            });
-        }, { 
-            threshold: 0.01 // Déclenchement dès que le premier pixel du conteneur apparaît
+    setup() {
+        const isCheckoutModalOpen = ref(false);
+        const isFloating = ref(false);
+        const btnWrapper = ref(null);
+
+        onMounted(() => {
+            const observer = new IntersectionObserver(([entry]) => {
+                isFloating.value = !entry.isIntersecting;
+            }, { threshold: 0.1 });
+
+            if (btnWrapper.value) {
+                observer.observe(btnWrapper.value);
+            }
         });
 
-        if (this.$refs.btnWrapper) {
-            observer.observe(this.$refs.btnWrapper);
-        }
+        return {
+            isCheckoutModalOpen,
+            isFloating,
+            btnWrapper
+        };
     }
 }
 </script>
