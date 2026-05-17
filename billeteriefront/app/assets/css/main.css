@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+@import '../css/wrapper.css';
+@import "tailwindcss";
+
+:root{
+
+    --primary-color: #F2F864;
+    --secondary-color: #EFF662;
+    --secondary-light-color:#32f459;
+    --secondary-dark-color:#1f7b31;
+    --tertiary-color:#222222;
+    --background-color: #181818;
+    --my-white: #fff;
+    --background-green-color: #3b8d50;
+
+
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    /* About my different fonts */
+    --font-primary: 'Inter', sans-serif;
+    --font-secondary: 'Instrument+Sans', sans-serif;
+
+    /* Font size */
+    --paragraph-font-size: 1rem
+
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: DM Sans, sans-serif;
+}

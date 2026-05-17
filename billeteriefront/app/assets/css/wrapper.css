@@ -1,0 +1,43 @@
+.main-container{
+    height: 100vh;
+    width: 100%;
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.main-container h1{
+    color: var(--primary-color);
+    font-family: var(--font-primary);
+    font-size: 2rem;
+}
+
+.pic-container{
+    height: 400px;
+    width: 400px;
+    background-color: var(--tertiary-color);
+    border-radius: 4px;
+}
+
+.info-container{
+    height: 200px;
+    width: 100%;
+    background-color: var(--tertiary-color);
+    border-radius: 4px;
+}
+
+.description-container{
+    min-height: 200px;
+    width: 100%;
+    background-color: var(--tertiary-color);
+    border-radius: 4px;
+}
+
+.description-container p{
+    color: var(--my-white);
+    font-family: var(--font-secondary);
+    font-size: 2rem;
+}
