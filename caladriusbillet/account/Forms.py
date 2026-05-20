@@ -98,3 +98,4 @@ class UtilisateurLoginForm(AuthenticationForm):
         'class': 'form-control',
         'placeholder': 'Mot de passe'
     }))
+

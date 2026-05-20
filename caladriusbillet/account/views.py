@@ -204,3 +204,30 @@ class CustomTokenRefreshView(APIView):
                 {'error': 'Token invalide ou expiré. Veuillez vous reconnecter.'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
+
+class LogoutView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh_token")
+            if refresh_token:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            
+            return Response(
+                {
+                    "success": True,
+                    "message": _("Vous avez été déconnecté avec succès.")
+                },
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "success": False,
+                    "message": _("Erreur lors de la déconnexion.")
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
