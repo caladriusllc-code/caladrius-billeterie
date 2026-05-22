@@ -206,7 +206,7 @@ class CustomTokenRefreshView(APIView):
             )
 
 class LogoutView(APIView):
-    authentication_classes = [JWTAuthentication]
+    
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
