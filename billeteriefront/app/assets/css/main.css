@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
 @import '../css/wrapper.css';
 @import "tailwindcss";
 @plugin "daisyui";
@@ -31,7 +31,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Inter Tight", sans-serif;
+    font-family: "Zalando Sans", sans-serif;
 }
 
 button{
