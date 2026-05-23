@@ -124,7 +124,7 @@ export default {
 
 .form-input {
   width: 100%;
-  padding: 0.625rem 0.75rem;
+  padding: 0.9rem;
   font-size: 1rem;
   line-height: 1.5;
   color: var(--text-color);
@@ -138,7 +138,7 @@ export default {
 /* Gestion du focus */
 .form-input:focus {
   outline: none;
-  border-color: var(--primary-color);
+  border-color: var(--secondary-color);
   box-shadow: 0 0 0 3px var(--focus-ring);
 }
 

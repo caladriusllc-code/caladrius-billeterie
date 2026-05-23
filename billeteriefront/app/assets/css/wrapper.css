@@ -4,7 +4,8 @@
     background-color: var(--background-color);
     display: flex;
     flex-direction: column;
-    align-items: normal;
+    align-items: center;
+    justify-content: center;
     gap: 1rem;
     padding: 1rem;
     overflow: hidden;
@@ -23,7 +24,8 @@
 }
 
 .pic-container {
-    height: 400px;         /* Hauteur fixe souhaitée */
+    height: auto;         /* Hauteur fixe souhaitée */
+    max-height: 500px;
     width: 100%;
     overflow: hidden;      /* Évite les débordements */
     border-radius: 4px;
@@ -73,6 +75,14 @@
     border-radius: 4px;
 }
 
+.info-container h2{
+    width: 100%;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: start;
+}
+
 .description-container{
     min-height: 200px;
     width: 100%;
@@ -84,4 +94,101 @@
     color: var(--my-white);
     font-family: var(--font-secondary);
     font-size: 2rem;
+}
+
+@media (min-width:768px){
+
+    .pic-container {
+        height: auto;         /* Hauteur fixe souhaitée */
+        max-height: 600px;
+        width: 100%;
+        overflow: hidden;      /* Évite les débordements */
+        border-radius: 4px;
+        position: relative;
+    }
+
+}
+
+@media (min-width:1024px){
+
+    .main-container{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .main-container h1{
+        color: var(--primary-color);
+        font-family: var(--font-primary);
+        font-size: 3rem; 
+    }
+
+    .main-container h3{
+        font-size: 1.8rem; 
+    }
+
+    .pic-container {
+        height: 100%;         /* Hauteur fixe souhaitée */
+        max-height: 800px;
+        width: 100%;
+        overflow: hidden;      /* Évite les débordements */
+        border-radius: 4px;
+        position: relative;
+    }
+
+    .pic-container::after {
+        content: "";
+        position: absolute;
+        inset: 0; /* Prend tout l'espace de la boîte */
+        /* Dégradé du noir (#181818) vers le transparent */
+        background: linear-gradient(to top, #181818 0%, rgba(24, 24, 24, 0) 100%);
+        pointer-events: none; /* Permet de cliquer à travers au besoin */
+    }
+
+    .pic-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;     /* L'image remplit le cadre sans se déformer (recadrage si nécessaire) */
+        display: block;
+    }
+
+    /* Le nouveau style pour le titre */
+    .pic-title-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 1.5rem;
+        z-index: 2; /* Devant le dégradé */
+    }
+
+    .pic-title-overlay h1 {
+        color: #fff;
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .pic-title-overlay h1 span {
+        color: var(--primary-color);
+    }
+
+    .info-container{
+        width: 100%;
+        background-color: var(--secondary-color);
+        border-radius: 4px;
+    }
+
+    .description-container{
+        min-height: 200px;
+        width: 100%;
+        background-color: var(--tertiary-color);
+        border-radius: 4px;
+    }
+
+    .description-container p{
+        color: var(--my-white);
+        font-family: var(--font-secondary);
+        font-size: 2rem;
+        line-height: 2;
+    }
 }

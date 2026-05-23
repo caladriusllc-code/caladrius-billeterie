@@ -8,6 +8,9 @@
         </div>
         
         <div class="info-container w-full flex flex-col items-center gap-2">
+
+            <h2> Information générales de l'évènement</h2>
+
             <div class="general-info w-full h-full flex flex-col gap-2">
                 <div class="date-local w-full flex flex-col gap-8">
                     <span class="flex gap-2 items-center">
@@ -47,15 +50,16 @@
                     Recusandae ex sint aspernatur nam.
                 </p>
             </div>
-        </div>
 
-        <!-- C'est ce wrapper qu'on observe désormais -->
-        <div class="btn-frame-wrapper" ref="btnWrapper">
-            <div class="btn-frame flex flex-2/3 items-center justify-center gap-4" :class="{ floating: isFloating }">
-                <mainButton @click="isCheckoutModalOpen = true"/>
-                <likeButton/>
+            <!-- C'est ce wrapper qu'on observe désormais -->
+            <div class="btn-frame-wrapper" ref="btnWrapper">
+                <div class="btn-frame flex flex-2/3 items-center justify-center gap-4" :class="{ floating: isFloating }">
+                    <mainButton @click="isCheckoutModalOpen = true"/>
+                    <likeButton/>
+                </div>
             </div>
         </div>
+        
         <checkoutModal :isOpen="isCheckoutModalOpen" @close="isCheckoutModalOpen = false"/>
     </div>
 </template>
@@ -103,7 +107,7 @@ export default {
 
 .price-info {
     width: 100%;
-    padding: 0.5rem;
+    padding: 1rem;
     background: var(--glass-bg);
     display: flex;
     align-items: center;
@@ -219,10 +223,96 @@ export default {
     }
 }
 
-@media (min-width: 768px) {
-    .main-container{
-        display: grid;
-        grid-template-columns: 1fr
+@media(min-width: 1024px){
+
+    .price-info span{
+        display: flex;
+        gap: 0.5rem;
+        color: #fff;
+    }
+
+    .date-local {
+        padding: 0.5rem;
+        background: var(--glass-bg);
+        display: flex;
+        align-items: normal;
+        gap: 0.5rem;
+        border-radius: 1rem;
+    }
+
+    .date-local span {
+        font-size: 1.2rem;
+    }
+
+    .date-local span svg {
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    .price-info span {
+        font-size: 1.2rem;
+    }   
+
+    .price-info p {
+        font-size: 1.2rem;
+    }
+
+    .event-details {
+        padding: 0.5rem;
+        background: var(--glass-bg);
+        border-radius: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .event-details h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--secondary-light-color);
+    }
+
+    .event-details p {
+        font-size: 1rem;
+        font-weight: 400;
+        color: var(--my-white);
+    }
+
+    .btn-frame-wrapper {
+        width: 100%;
+        height: 75px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        margin-top: 1rem;
+    }
+
+    .btn-frame {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.5s ease-in-out;
+    }
+
+    /* Mode flottant : ancré en bas, centré, avec animation de remontée */
+    .btn-frame.floating {
+        width: 90%;
+        height: 60px;
+        position: fixed;
+        bottom: 1rem;
+        left: 50%;
+        /* Centre horizontalement sans bouger de la droite */
+        transform: translateX(-50%);
+        border-radius: 1rem;
+        z-index: 1000;
+        padding: 1rem;
+        
+        /* Animation venant du bas */
+        animation: slideUpFromBottom 0.4s ease-out;
     }
 }
+
 </style>
