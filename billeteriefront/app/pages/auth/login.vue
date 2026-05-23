@@ -1,15 +1,13 @@
 <template>
     <div class="main-wrapper">
-        <h1>Bienvenenu au pays mon filis</h1>
+        <loginForm />
     </div>
 </template>
 
-<script>
-export default {
-
-}
+<script setup>
+import loginForm from '~/components/forms/loginForm.vue';
 </script>
 
-<style>
+<style scoped>
 
 </style>

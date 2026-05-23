@@ -1,0 +1,18 @@
+/* mobile first*/
+
+form{
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem;
+}
+
+form h3{
+    color: var(--my-white);
+    font-size: 1.4rem;
+    font-weight: 500;
+}

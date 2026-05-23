@@ -101,6 +101,7 @@ export default {
   flex-direction: column;
   margin-bottom: 0.5rem;
   font-family: sans-serif;
+  width:100%;
 }
 
 .input-label {
@@ -127,8 +128,8 @@ export default {
   padding: 0.9rem;
   font-size: 1rem;
   line-height: 1.5;
-  color: var(--text-color);
-  background-color: var(--glass-border);
+  color: var(--my-white);
+  background: var(--glass-bg);
   background-clip: padding-box;
   border: 1px solid var(--border-color);
   border-radius: 1.5rem;
@@ -138,8 +139,8 @@ export default {
 /* Gestion du focus */
 .form-input:focus {
   outline: none;
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px var(--focus-ring);
+  background-color: var(--glass-border);
+  transition: ease-in 0.5s;
 }
 
 /* Gestion des icônes */
