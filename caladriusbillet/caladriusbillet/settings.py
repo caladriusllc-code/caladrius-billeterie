@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'account',
-    'ticket'
+    'ticket',
+    'event'
 ]
 
 REST_FRAMEWORK = {

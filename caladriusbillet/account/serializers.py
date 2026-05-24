@@ -25,6 +25,9 @@ class CustomerClassSerializer(serializers.ModelSerializer):
             'password'
         ]
         read_only_fields = ['id', 'is_verified']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
     def create(self, validated_data):
         password = validated_data.pop('password')

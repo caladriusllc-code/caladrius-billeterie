@@ -47,7 +47,6 @@ class CreateUserView(APIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
 
     def post(self, request, *args, **kwargs):
         # On accepte la clé 'username' ou 'email' pour une compatibilité maximale
