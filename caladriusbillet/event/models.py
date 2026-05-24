@@ -20,7 +20,7 @@ class Event(models.Model):
     organizer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='events')
     description = models.TextField(help_text='Description complète')
     category = models.CharField(max_length=50, choices=EventCategory.choices, default=EventCategory.OTHER)
-
+    
     # Lieu
     venue_name = models.CharField(max_length=200)
     address = models.TextField()

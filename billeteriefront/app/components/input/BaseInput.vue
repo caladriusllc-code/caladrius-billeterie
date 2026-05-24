@@ -150,7 +150,6 @@ export default {
 
 .form-input:hover{
   background: var(--glass-border);
-  cursor: pointer;
   transition: ease-in 0.2s;
 }
 

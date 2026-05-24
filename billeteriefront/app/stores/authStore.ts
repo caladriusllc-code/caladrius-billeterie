@@ -38,6 +38,8 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Nouvelle action pour le Login
+  // authStore.ts
+
   const login = async (credentials: Pick<User, 'email' | 'username' | 'password'>) => {
     isLoading.value = true
     error.value = null
@@ -45,28 +47,30 @@ export const useAuthStore = defineStore('auth', () => {
     console.log('[AuthStore] login() → credentials envoyés :', credentials)
 
     try {
-      // Ajuste l'URL '/auth/login' selon la structure de ton backend
       const response = await $api('/account/login/', {
         method: 'POST',
         body: credentials,
-      })
+      }) as any // Cast temporaire pour éviter les erreurs d'auto-complétion
 
-      if (response){
+      if (response && response.user) {
         console.log('[AuthStore] login() → réponse reçue :', response)
 
-        // Met à jour l'utilisateur (ou gère le stockage du token ici si nécessaire)
-        user.value = (response as any).data?.user || {}
+        user.value = {
+          ...response.user,
+          id: response.user.user // Récupère le user.id renvoyé par Django
+        }
 
         return response
       } else {
-        console.log('[AuthStore] login() → erreur :', response)
+        console.log('[AuthStore] login() → erreur structurelle ou réponse vide')
         error.value = "Identifiants incorrects"
         throw new Error("Identifiants incorrects")
       }
 
     } catch (err: any) {
       console.error('[AuthStore] login() → erreur :', err)
-      error.value = err.message
+      // Gestion si le backend renvoie une erreur au format { error: "..." }
+      error.value = err.data?.error || err.message || "Une erreur est survenue"
       throw err
     } finally {
       isLoading.value = false
@@ -78,6 +82,6 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading,
     error,
     register,
-    login, // <-- Ne pas oublier d'exporter la fonction
+    login,
   }
 })

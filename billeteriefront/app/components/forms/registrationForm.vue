@@ -1,26 +1,38 @@
 <template>
     <form @submit.prevent="handleLogin">
 
-        <h3>Connexion</h3>
+        <h3>Création de compte</h3>
 
-        <BaseInputVue 
-            label="Email/username"
-            v-model="credentials.username"
-            :errorMessage="errorMessage.username"
-        />
+        <stepper :steps="stepItems"/>
 
-        <BaseInputVue 
-            label="Mot de passe"
-            v-model="credentials.password"
-            :errorMessage="errorMessage.password"
-            type="password"
-        />
+        <template v-if="step === 1">
 
-        <mainButton 
-            label="Connexion" 
-            type="submit"
-            :isLoading="authStore.isLoading"
-        />
+            <BaseChoices v-model="registrationForm.user_type"/>
+
+        </template>
+
+        <template v-else>
+
+            <BaseInputVue 
+                label="Email/username"
+                v-model="registrationForm.username"
+                :errorMessage="errorMessage.username"
+            />
+
+            <BaseInputVue 
+                label="Mot de passe"
+                v-model="registrationForm.password"
+                :errorMessage="errorMessage.password"
+                type="password"
+            />
+
+            <mainButton 
+                label="Connexion" 
+                type="submit"
+                :isLoading="authStore.isLoading"
+            />
+
+        </template>
 
         <div class="err-message-wrapper" v-if="authStore.error" >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -41,13 +53,16 @@
 </template>
 
 <script lang="ts">
-import BaseInputVue from '../input/BaseInput.vue'
+import BaseInputVue from '../input/BaseInput.vue';
 import mainButton from '../buttons/mainButton.vue';
 import secondButton from '../buttons/secondButton.vue';
 import divider from '../tools/divider.vue';
-import { ref } from 'vue';
+import stepper from '../tools/stepper.vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/authStore';
+import type {User} from '../../stores/authStore';
+import BaseChoices from '../input/BaseChoices.vue';
 
 interface ErrorMessage{
     username: string,
@@ -65,7 +80,9 @@ export default {
         BaseInputVue,
         mainButton,
         secondButton,
-        divider
+        BaseChoices,
+        divider,
+        stepper
     },
     setup(){
 
@@ -75,16 +92,28 @@ export default {
         const authStore = useAuthStore()
 
         // State
-        const credentials = ref<Credentials>({
+        const registrationForm = ref<User>({
             username:'',
             password:'',
-            email:''
+            email:'',
+            first_name:'',
+            'last_name':'',
+            phone_number:'',
+            user_type:''
         })
 
         const errorMessage = ref<ErrorMessage>({
             username: '',
             password: ''
         })
+
+        const step = ref(1)
+
+        const stepItems = computed(() => [
+            { id: 1, name: 'Type de compte',            isActive: step.value === 1 },
+            { id: 2, name: 'Informations',               isActive: step.value === 2 },
+            { id: 3, name: 'Coordonnées',                isActive: step.value === 3 },
+        ])
 
         // computed
         const validateForm = (): boolean => {
@@ -94,15 +123,15 @@ export default {
             
             let isValid = true
 
-            if (!credentials.value.username.trim()) {
+            if (!registrationForm.value.username.trim()) {
                 errorMessage.value.username = "Veuillez entrer un email ou un nom d'utilisateur."
                 isValid = false
-            } else if (credentials.value.username.length < 3) {
+            } else if (registrationForm.value.username.length < 3) {
                 errorMessage.value.username = "L'identifiant doit contenir au moins 3 caractères."
                 isValid = false
             }
 
-            if (!credentials.value.password) {
+            if (!registrationForm.value.password) {
                 errorMessage.value.password = "Veuillez entrer votre mot de passe."
                 isValid = false
             }
@@ -117,9 +146,9 @@ export default {
             try {
                 // 2. Si c'est valide, on tente la connexion (Correction de l'envoi de l'email ici)
                 await authStore.login({
-                email: credentials.value.email,
-                username: credentials.value.username,
-                password: credentials.value.password
+                email: registrationForm.value.email,
+                username: registrationForm.value.username,
+                password: registrationForm.value.password
                 })
                 router.push('/dashboard/profile') 
             } catch (error) {
@@ -130,8 +159,10 @@ export default {
         return{
             useRouter,
             authStore,
-            credentials,
+            registrationForm,
             errorMessage,
+            step,
+            stepItems,
             validateForm,
             handleLogin
         }
