@@ -6,26 +6,34 @@
         <BaseInputVue 
             label="Email/username"
             v-model="credentials.username"
+            :errorMessage="errorMessage.username"
         />
 
         <BaseInputVue 
             label="Mot de passe"
             v-model="credentials.password"
+            :errorMessage="errorMessage.password"
             type="password"
         />
 
-        <mainButton label="Connexion" type="submit"/>
+        <mainButton 
+            label="Connexion" 
+            type="submit"
+            :isLoading="authStore.isLoading"
+        />
 
-        <div class="err-message-wrapper" >
+        <div class="err-message-wrapper" v-if="authStore.error" >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
             </svg>
             <p class="error-message">
-                Une erreur est survenue.
+                {{ authStore.error }}
             </p>
         </div>
 
         <divider orientation="horizontal" :thickness="2" color="#515151" length="100%" />
+
+        <p>J'ai pas de compte</p>
 
         <secondButton label="Ouvrir son compte"/>
 
@@ -113,7 +121,7 @@ export default {
                 username: credentials.value.username,
                 password: credentials.value.password
                 })
-                router.push('/profile/profile') 
+                router.push('/dashboard/profile') 
             } catch (error) {
                 console.log('[Login] Erreur capturée', error)
             }

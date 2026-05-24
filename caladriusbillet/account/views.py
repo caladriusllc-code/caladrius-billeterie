@@ -46,93 +46,77 @@ class CreateUserView(APIView):
             )
 
 class LoginView(APIView):
-    
     permission_classes = [AllowAny]
     authentication_classes = []
 
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        username = request.data.get('username')
+        # On accepte la clé 'username' ou 'email' pour une compatibilité maximale
+        identifier = request.data.get('username') or request.data.get('email')
         password = request.data.get('password')
 
-        # Vérification des champs obligatoires
         if not password:
             return Response(
                 {'error': 'Veuillez fournir un mot de passe.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        if not email and not username:
+        if not identifier:
             return Response(
                 {'error': 'Veuillez fournir un email ou un nom d\'utilisateur.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Authentification par email
-        if email:
-            try:
-                user = CustomUser.objects.get(email=email)
-                username = user.username  # On récupère le username pour l'authentification
-            except CustomUser.DoesNotExist:
-                return Response(
-                    {'error': 'Email ou mot de passe incorrect.'},
-                    status=status.HTTP_401_UNAUTHORIZED
-                )
-        else:
-            # Authentification par username
-            username = username
+        # Détection automatique : Recherche par email ou par nom d'utilisateur
+        try:
+            if '@' in identifier:
+                user_obj = CustomUser.objects.get(email=identifier)
+            else:
+                user_obj = CustomUser.objects.get(username=identifier)
+            
+            # On extrait le username exact requis par authenticate()
+            username = user_obj.username
+        except CustomUser.DoesNotExist:
+            # On retourne une erreur générique pour des raisons de sécurité
+            return Response(
+                {'error': 'Identifiants incorrects.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        # CORRECTION: authenticate() ne prend pas 'email' comme paramètre
+        # Authentification officielle Django
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             if not user.is_active:
                 return Response(
                     {'error': 'Votre compte est désactivé.'},
-                    status=status.HTTP_401_UNAUTHORIZED
+                    status=status.HTTP_403_FORBIDDEN
                 )
                 
-            # Générer les tokens JWT
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
             refresh_token = str(refresh)
 
-            # Création de la reponse
             response = Response({
                'user': {
-                   'user':user.id,
+                   'user': user.id,
                     'username': user.username,
-                    'email':user.email,
+                    'email': user.email,
                     'first_name': user.first_name,
                     'last_name': user.last_name
                 },
-                'message':'Connexion Réussie.'
+                'message': 'Connexion Réussie.'
             }, status=status.HTTP_200_OK
             )
 
-            # Définir les cookies HttpOnly
-            # Access Token cookie (15 minutes ou 1 jour selon votre configuration)
-            response.set_cookie(
-                key='access_token',
-                value=access_token,
-                httponly=True,
-                max_age=24 * 60 * 60,  # 1 jour (votre settings)
-            )
-
-            # Refresh Token cookie (7 jours)
-            response.set_cookie(
-                key='refresh_token',
-                value=refresh_token,
-                httponly=True,
-                max_age=7 * 24 * 60 * 60,  # 7 jours
-            )
+            response.set_cookie(key='access_token', value=access_token, httponly=True, max_age=24 * 60 * 60)
+            response.set_cookie(key='refresh_token', value=refresh_token, httponly=True, max_age=7 * 24 * 60 * 60)
 
             return response
         
         else:
             return Response(
-                {'error': 'Email/Nom d\'utilisateur ou mot de passe incorrect.'},
-                status=status.HTTP_401_UNAUTHORIZED
+                {'error': 'Identifiants incorrects.'},
+                status=status.HTTP_400_BAD_REQUEST
             )
         
 class CustomTokenRefreshView(APIView):

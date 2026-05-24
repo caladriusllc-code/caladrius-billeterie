@@ -4,8 +4,19 @@
     </div>
 </template>
 
-<script setup>
+<script>
 import loginForm from '~/components/forms/loginForm.vue';
+
+export default{
+
+    components:{
+        loginForm
+    },
+    setup(){
+        
+    }
+
+}
 </script>
 
 <style scoped>
