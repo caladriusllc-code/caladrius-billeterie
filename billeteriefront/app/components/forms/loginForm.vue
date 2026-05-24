@@ -25,12 +25,18 @@
             </p>
         </div>
 
+        <divider orientation="horizontal" :thickness="2" color="#515151" length="100%" />
+
+        <secondButton label="Ouvrir son compte"/>
+
     </form>
 </template>
 
 <script lang="ts">
 import BaseInputVue from '../input/BaseInput.vue'
 import mainButton from '../buttons/mainButton.vue';
+import secondButton from '../buttons/secondButton.vue';
+import divider from '../tools/divider.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/authStore';
@@ -49,7 +55,9 @@ interface Credentials{
 export default {
     components:{
         BaseInputVue,
-        mainButton
+        mainButton,
+        secondButton,
+        divider
     },
     setup(){
 

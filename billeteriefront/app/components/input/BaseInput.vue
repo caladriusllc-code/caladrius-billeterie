@@ -46,6 +46,8 @@
 </template>
 
 <script>
+import {useId, computed} from 'vue'
+
 export default {
   name: 'BaseInput',
   inheritAttrs: false,
@@ -77,20 +79,30 @@ export default {
     required: {
       type: Boolean,
       default: false
+    },
+    placeholder:{
+      type:String,
+      default:"Entrer votre nom"
     }
   },
   emits: ['update:modelValue', 'blur'],
-  computed: {
-    // Génère un ID unique si l'utilisateur n'en fournit pas
-    inputId() {
-      return this.id || `input-${Math.random().toString(36).substr(2, 9)}`;
-    }
-  },
-  methods: {
-    handleInput(event) {
-      this.$emit('update:modelValue', event.target.value);
-    }
+  setup(props, { emit }) {
+    const generatedId = useId();
+    
+    // On garde la logique de computed ici
+    const inputId = computed(() => props.id || `input-${generatedId}`);
+
+    // On définit la méthode ici pour pouvoir l'utiliser dans le template
+    const handleInput = (event) => {
+      emit('update:modelValue', event.target.value);
+    };
+
+    return {
+      inputId,
+      handleInput
+    };
   }
+
 };
 </script>
 
@@ -133,7 +145,13 @@ export default {
   background-clip: padding-box;
   border: 1px solid var(--border-color);
   border-radius: 1.5rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: ease-in 0.3s;
+}
+
+.form-input:hover{
+  background: var(--glass-border);
+  cursor: pointer;
+  transition: ease-in 0.2s;
 }
 
 /* Gestion du focus */

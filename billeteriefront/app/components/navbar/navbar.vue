@@ -9,7 +9,7 @@
             </h3>
 
             <!-- CTA desktop -->
-            <navBarButtonVue/>
+            <navBarButtonVue @click="()=>router.push('/auth/login')"/>
                 
 
             <!-- Hamburger (caché sur desktop) -->
@@ -36,12 +36,16 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import Hamburger from '../buttons/hamburger.vue';
 import navBarButtonVue from '../buttons/navBarButton.vue';
+import { useRouter } from 'vue-router';
 
 export default {
     name: 'MainHeader',
     components: { Hamburger, navBarButtonVue },
 
     setup() {
+
+        const router = useRouter()
+
         const isMenuOpen = ref<boolean>(false);
         const isScrolled = ref<boolean>(false);
 
@@ -68,7 +72,7 @@ export default {
             window.removeEventListener('scroll', handleScroll);
         });
 
-        return { isMenuOpen, isScrolled, toggleMenu };
+        return {router, isMenuOpen, isScrolled, toggleMenu };
     },
 };
 </script>

@@ -8,7 +8,9 @@ form{
     justify-content: center;
     align-items: center;
     gap: 1rem;
-    padding: 0.5rem;
+    padding: 1rem;
+    background: #181818f7;
+    border-radius: 1rem;
 }
 
 form h3{
