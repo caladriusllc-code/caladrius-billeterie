@@ -86,8 +86,12 @@ export default {
         // Valeur sélectionnée
         modelValue: {
             type: String,
-            default: null,
-            validator: (value) => [null, 'PERSONNE_PHYSIQUE', 'PERSONNE_MORALE'].includes(value)
+            default: '',
+            validator: (value) => [
+                null, 
+                'PERSONNE_PHYSIQUE', 
+                'PERSONNE_MORALE'
+            ].includes(value)
         },
         // Label du champ
         label: {
@@ -218,7 +222,6 @@ export default {
 .entity-option--selected {
     border-color: var(--primary-color);
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.02) 100%);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
 .entity-option--disabled {
@@ -233,9 +236,9 @@ export default {
     justify-content: center;
     width: 48px;
     height: 48px;
-    background: var(--primary-color);
+    background: var(--tertiary-color);
     border-radius: 8px;
-    color: var(--background-color);
+    color: var(--secondary-color);
     flex-shrink: 0;
     transition: all 0.3s ease;
 }
@@ -294,7 +297,6 @@ export default {
 .indicator--active {
     border-color: var(--primary-color);
     background: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
 }
 
 .entity-type__error {

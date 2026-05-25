@@ -8,9 +8,10 @@ export interface User {
   first_name?: string;
   last_name?: string;
   password: string;
+  passwordConfirmation?: string;
   email: string;
   phone_number: string;
-  user_type: string;
+  user_type: string | null;
 }
 
 export const useAuthStore = defineStore('auth', () => {
