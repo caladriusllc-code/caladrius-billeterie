@@ -1,18 +1,21 @@
 <template>
     <div class="main-wrapper">
         <navbar/>
-        <eventDetailSectionVue/>
+        <heroSectionVue/>
+        
     </div>
 </template>
 
 <script>
 import navbar from '../components/navbar/navbar.vue'
 import eventDetailSectionVue from '../components/sections/eventDetailSection.vue'
+import heroSectionVue from '../components/sections/heroSection.vue'
 
 export default {
     components:{
         eventDetailSectionVue,
-        navbar
+        navbar,
+        heroSectionVue
     }
 }
 </script>

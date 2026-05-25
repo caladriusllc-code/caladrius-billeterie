@@ -1,12 +1,16 @@
 <template>
-    <div class="main-wrapper">
-        <h1>Bienvenu au pays mon fils</h1>
+    <div class="main-wrapper main-dashboard">
+        <navbarVue/>
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import navbarVue from '../../components/navbar/navbar.vue'
 
+export default {
+    components:{
+        navbarVue
+    }
 }
 </script>
 

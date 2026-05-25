@@ -35,7 +35,11 @@
 
         <p>J'ai pas de compte</p>
 
-        <secondButton label="Ouvrir un compte"/>
+        <secondButton 
+            type="button" 
+            label="Ouvrir un compte"
+            @click.prevent="()=>router.push('/auth/registration')"
+        />
 
     </form>
 </template>
@@ -128,7 +132,7 @@ export default {
         }
 
         return{
-            useRouter,
+            router,
             authStore,
             credentials,
             errorMessage,

@@ -36,6 +36,39 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
   const register = async (payload: Omit<User, 'id'>) => {
     // ... ton code existant pour register ...
+    isLoading.value = true;
+    error.value = null;
+
+    console.log('[formulaire soumis]', payload)
+
+    try{
+      const response = await $api('/account/register/', {
+        method: 'POST',
+        body: payload
+      }) as any
+
+      if (response && response.user) {
+        console.log('[AuthStore] login() → réponse reçue :', response)
+
+        user.value = {
+          ...response.user,
+          id: response.user.user // Récupère le user.id renvoyé par Django
+        }
+
+        return response
+      } else {
+        console.log('[AuthStore] login() → erreur structurelle ou réponse vide')
+        error.value = "Erreur lors de l'ouverture du compte"
+        throw new Error("Identifiants incorrects")
+      }
+    } catch (err: any) {
+      console.error('[AuthStore] registration() → erreur :', err)
+      // Gestion si le backend renvoie une erreur au format { error: "..." }
+      error.value = err.data?.error || err.message || "Une erreur est survenue"
+      throw err
+    } finally {
+      isLoading.value = false
+    }
   }
 
   // Nouvelle action pour le Login

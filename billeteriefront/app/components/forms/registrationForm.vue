@@ -14,18 +14,19 @@
         </template>
 
         <template v-else-if="step === 2">
-            <BaseInputVue 
-                label="Prénom"
-                v-model="registrationForm.first_name"
-                :errorMessage="errorMessage.first_name"
-                placeholder="Votre prénom"
-            />
 
             <BaseInputVue 
                 label="Nom"
                 v-model="registrationForm.last_name"
                 :errorMessage="errorMessage.last_name"
                 placeholder="Votre nom"
+            />
+
+            <BaseInputVue 
+                label="Prénom"
+                v-model="registrationForm.first_name"
+                :errorMessage="errorMessage.first_name"
+                placeholder="Votre prénom"
             />
 
             <BaseInputVue 
@@ -95,7 +96,7 @@
 
             <p class="login-prompt">J'ai déjà un compte</p>
 
-            <secondButton label="Se connecter" @click.prevent="router.push('/login')"/>
+            <secondButton label="Se connecter" @click.prevent="router.push('/auth/login')"/>
         </template>
 
     </form>
@@ -226,6 +227,7 @@ export default {
         const nextStep = () => {
             if (validateCurrentStep() && step.value < 3) {
                 step.value++
+                console.log('Données de formulaire', registrationForm.value)
             }
         }
 
@@ -244,7 +246,7 @@ export default {
                 const { passwordConfirmation, ...payload } = registrationForm.value
                 
                 await authStore.register(payload)
-                router.push('/dashboard/profile') 
+                router.push('/auth/login') 
             } catch (error) {
                 console.log('[Register] Erreur capturée', error)
             }

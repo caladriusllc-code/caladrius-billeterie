@@ -11,7 +11,7 @@ from .views import (
 )
 
 urlpatterns = [
-    path('create/', CreateUserView.as_view(), name='create_user'),
+    path('register/', CreateUserView.as_view(), name='create_user'),
     path('login/', LoginView.as_view(), name='user_login'),
     path('token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', LogoutView.as_view(), name='logout'),
