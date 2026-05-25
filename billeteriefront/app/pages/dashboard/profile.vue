@@ -1,147 +1,149 @@
 <template>
-  <div class="dashboard-container">
+    <div class="dashboard-container">
     
-    <main class="main-content">
-        <header class="top-header">
-            <div class="mobile-header-top">
-                <h1>Dashboard</h1>
-                <div class="user-profile">
-                <div class="avatar user-avatar">MS</div>
+        <main class="main-content">
+            <header class="top-header">
+                <div class="mobile-header-top">
+                    <h1>Dashboard</h1>
+                    <div class="user-profile">
+                    <div class="avatar user-avatar">MS</div>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <div class="search-bar">
+                    <span>🔍</span>
+                    <input type="text" placeholder="Search event..." />
+                    </div>
+                    <button class="btn-primary">+ Add Event</button>
+                    <button class="icon-btn hidden-mobile">🔔</button>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+            
+                <div class="left-column">
+                    
+                    <div class="stats-row">
+                    <div class="stat-card" v-for="(stat, index) in stats" :key="index">
+                        <div class="stat-icon" :style="{ color: stat.color }">{{ stat.initials }}</div>
+                        <div class="stat-info">
+                        <h3>{{ stat.title }}</h3>
+                        <p>Capacity : <strong>{{ stat.current }}</strong>/{{ stat.total }} Tickets</p>
+                        </div>
+                    </div>
+                    </div>
+
+                    <section class="events-section">
+                    <div class="section-header">
+                        <h2>Ongoing Event</h2>
+                        <button class="more-options">•••</button>
+                    </div>
+                    <div class="events-row">
+                        <div class="event-card" v-for="(event, index) in ongoingEvents" :key="index">
+                        <div class="event-image" :style="{ background: event.bg }"></div>
+                        <h3>{{ event.title }}</h3>
+                        <p>🕒 {{ event.time }}</p>
+                        </div>
+                    </div>
+                    </section>
+
+                    <section class="events-section">
+                    <div class="section-header">
+                        <h2>Upcoming Event</h2>
+                        <button class="more-options">•••</button>
+                    </div>
+                    <div class="events-row upcoming-row">
+                        <div class="event-card upcoming-card" v-for="(event, index) in upcomingEvents" :key="index">
+                        <div class="date-badge">{{ event.date }}</div>
+                        <h3>{{ event.title }}</h3>
+                        <p>🕒 {{ event.time }}</p>
+                        <div class="attendees">
+                            <div class="avatar-sm" style="background: #e74c3c;"></div>
+                            <div class="avatar-sm" style="background: #3498db;"></div>
+                            <div class="avatar-sm" style="background: #2ecc71;"></div>
+                            <div class="avatar-sm" style="background: #f1c40f;"></div>
+                        </div>
+                        </div>
+                    </div>
+                    </section>
+
+                </div>
+
+                <div class="right-column">
+                    
+                    <aside class="widget notifications-widget">
+                        <div class="widget-header">
+                            <h2>Notification</h2>
+                            <button class="more-options">•••</button>
+                        </div>
+                        <div class="notification-list">
+                            <div class="notification-item" v-for="(notif, index) in notifications" :key="index">
+                            <div class="avatar-sm" style="background: #95a5a6;"></div>
+                            <div class="notif-content">
+                                <p><strong>{{ notif.name }}</strong> has bought <span :style="{ color: notif.highlightColor }">{{ notif.action }}</span></p>
+                                <span class="time">{{ notif.time }}</span>
+                            </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <aside class="widget chart-widget">
+                        <div class="widget-header">
+                            <h2>Ticket Selling</h2>
+                            <button class="more-options">•••</button>
+                        </div>
+                        <div class="chart-container">
+                            <svg viewBox="0 0 300 100" class="line-chart">
+                            <path d="M 0 80 Q 20 50, 40 60 T 80 40 T 120 70 T 160 30 T 200 40 T 240 20 T 300 10" 
+                                fill="none" stroke="var(--primary-color)" stroke-width="3" stroke-linecap="round"/>
+                            </svg>
+                            <div class="chart-labels">
+                            <span>06.00</span>
+                            <span>07.00</span>
+                            <span>08.00</span>
+                            <span>09.00</span>
+                            </div>
+                        </div>
+                        <button class="show-more-btn">Show More ></button>
+                    </aside>
+
                 </div>
             </div>
+        </main>
 
-            <div class="header-actions">
-                <div class="search-bar">
-                <span>🔍</span>
-                <input type="text" placeholder="Search event..." />
-                </div>
-                <button class="btn-primary">+ Add Event</button>
-                <button class="icon-btn hidden-mobile">🔔</button>
+        <aside class="sidebar">
+            <div class="logo hidden-mobile">
+                <div class="logo-icon">C</div>
             </div>
-        </header>
-
-      <div class="dashboard-grid">
-        
-        <div class="left-column">
-          
-          <div class="stats-row">
-            <div class="stat-card" v-for="(stat, index) in stats" :key="index">
-              <div class="stat-icon" :style="{ color: stat.color }">{{ stat.initials }}</div>
-              <div class="stat-info">
-                <h3>{{ stat.title }}</h3>
-                <p>Capacity : <strong>{{ stat.current }}</strong>/{{ stat.total }} Tickets</p>
-              </div>
+            <nav class="nav-menu">
+                <button class="nav-item active">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                    </svg>
+                </button>
+                <button class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+                    </svg>
+                </button>
+                <button class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+                    </svg>
+                </button>
+                <button class="nav-item">📅</button>
+                <button class="nav-item hidden-mobile">💬</button>
+                <button class="nav-item hidden-mobile">👥</button>
+                <button class="nav-item hidden-mobile">⚙️</button>
+            </nav>
+            <div class="logout hidden-mobile">
+                <button class="nav-item">🚪</button>
             </div>
-          </div>
-
-          <section class="events-section">
-            <div class="section-header">
-              <h2>Ongoing Event</h2>
-              <button class="more-options">•••</button>
-            </div>
-            <div class="events-row">
-              <div class="event-card" v-for="(event, index) in ongoingEvents" :key="index">
-                <div class="event-image" :style="{ background: event.bg }"></div>
-                <h3>{{ event.title }}</h3>
-                <p>🕒 {{ event.time }}</p>
-              </div>
-            </div>
-          </section>
-
-          <section class="events-section">
-            <div class="section-header">
-              <h2>Upcoming Event</h2>
-              <button class="more-options">•••</button>
-            </div>
-            <div class="events-row upcoming-row">
-              <div class="event-card upcoming-card" v-for="(event, index) in upcomingEvents" :key="index">
-                <div class="date-badge">{{ event.date }}</div>
-                <h3>{{ event.title }}</h3>
-                <p>🕒 {{ event.time }}</p>
-                <div class="attendees">
-                  <div class="avatar-sm" style="background: #e74c3c;"></div>
-                  <div class="avatar-sm" style="background: #3498db;"></div>
-                  <div class="avatar-sm" style="background: #2ecc71;"></div>
-                  <div class="avatar-sm" style="background: #f1c40f;"></div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-        </div>
-
-        <div class="right-column">
-          
-          <aside class="widget notifications-widget">
-            <div class="widget-header">
-              <h2>Notification</h2>
-              <button class="more-options">•••</button>
-            </div>
-            <div class="notification-list">
-              <div class="notification-item" v-for="(notif, index) in notifications" :key="index">
-                <div class="avatar-sm" style="background: #95a5a6;"></div>
-                <div class="notif-content">
-                  <p><strong>{{ notif.name }}</strong> has bought <span :style="{ color: notif.highlightColor }">{{ notif.action }}</span></p>
-                  <span class="time">{{ notif.time }}</span>
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          <aside class="widget chart-widget">
-            <div class="widget-header">
-              <h2>Ticket Selling</h2>
-              <button class="more-options">•••</button>
-            </div>
-            <div class="chart-container">
-              <svg viewBox="0 0 300 100" class="line-chart">
-                <path d="M 0 80 Q 20 50, 40 60 T 80 40 T 120 70 T 160 30 T 200 40 T 240 20 T 300 10" 
-                      fill="none" stroke="var(--primary-color)" stroke-width="3" stroke-linecap="round"/>
-              </svg>
-              <div class="chart-labels">
-                <span>06.00</span>
-                <span>07.00</span>
-                <span>08.00</span>
-                <span>09.00</span>
-              </div>
-            </div>
-            <button class="show-more-btn">Show More ></button>
-          </aside>
-
-        </div>
-      </div>
-    </main>
-
-    <aside class="sidebar">
-        <div class="logo hidden-mobile">
-            <div class="logo-icon">C</div>
-        </div>
-        <nav class="nav-menu">
-            <button class="nav-item active">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                </svg>
-            </button>
-            <button class="nav-item">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
-                </svg>
-            </button>
-            <button class="nav-item">
-
-            </button>
-            <button class="nav-item">📅</button>
-            <button class="nav-item hidden-mobile">💬</button>
-            <button class="nav-item hidden-mobile">👥</button>
-            <button class="nav-item hidden-mobile">⚙️</button>
-        </nav>
-        <div class="logout hidden-mobile">
-            <button class="nav-item">🚪</button>
-        </div>
-    </aside>
-
-  </div>
+        </aside>
+    </div>
 </template>
 
 <script setup lang="ts">
