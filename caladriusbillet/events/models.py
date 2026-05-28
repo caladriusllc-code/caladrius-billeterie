@@ -81,3 +81,23 @@ class Event(models.Model):
         # Si le dictionnaire d'erreurs n'est pas vide, on lève l'exception
         if errors:
             raise ValidationError(errors)
+        
+# event/models.py (AJOUTER À LA FIN)
+class TicketType(models.Model):
+    """Type de ticket (Normal, VIP, etc.)"""
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='ticket_types')
+    name = models.CharField(max_length=100, verbose_name="Nom")
+    description = models.TextField(blank=True, verbose_name="Description")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Prix")
+    quantity_available = models.PositiveIntegerField(verbose_name="Quantité disponible")
+    max_per_order = models.PositiveIntegerField(default=4, verbose_name="Max par commande")
+    is_active = models.BooleanField(default=True, verbose_name="Actif")
+    
+    class Meta:
+        verbose_name = "Type de ticket"
+        verbose_name_plural = "Types de tickets"
+    
+    def __str__(self):
+        return f"{self.name} - {self.price}€"

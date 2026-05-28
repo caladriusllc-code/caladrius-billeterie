@@ -30,3 +30,4 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"{self.username} - {self.get_role_display()}"  # get_role_display() donne la valeur affichée
     
+

@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'account',
     'tickets',
-    'event'
+    'events'
 ]
 
 REST_FRAMEWORK = {

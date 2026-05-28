@@ -1,4 +1,4 @@
-from .models import Event
+from .models import Event, TicketType
 from rest_framework import serializers
 from account.serializers import CustomerClassSerializer
 
@@ -33,3 +33,19 @@ class EventSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         # request.user est garanti authentifié par la permission
         return Event.objects.create(organizer=request.user, **validated_data)
+
+
+class TicketTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TicketType
+        fields = '__all__'
+
+
+class EventSerializer(serializers.ModelSerializer):
+    organizer_name = serializers.CharField(source='organizer.username', read_only=True)
+    ticket_types = TicketTypeSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Event
+        fields = '__all__'
+        read_only_fields = ['id', 'slug', 'created_at', 'updated_at']
