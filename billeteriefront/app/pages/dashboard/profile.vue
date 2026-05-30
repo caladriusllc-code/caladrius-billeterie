@@ -15,8 +15,7 @@
             <span>🔍</span>
             <input type="text" placeholder="Search event..." />
           </div>
-          <button class="btn-primary">+ Add Event</button>
-          <button class="icon-btn hidden-mobile">🔔</button>
+          <button  class="btn-primary" @click="() => router.push('/event/addEvent')">+ Add Event</button>
         </div>
       </header>
 
@@ -135,6 +134,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 // Remplacement de data() par la Composition API (setup)
 const stats = ref([
