@@ -1,10 +1,23 @@
 <template>
   <div class="dashboard-container">
     
+    <DashboardSidebar />
+    
     <main class="main-content">
+      
+      <!-- HEADER MIS À JOUR -->
       <header class="top-header">
-        <div class="mobile-header-top">
+        <div class="header-title">
           <h1>Dashboard</h1>
+        </div>
+        
+        <div class="header-actions">
+          <navBarButton />
+          <button class="icon-btn hidden-mobile">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
+            </svg>
+          </button>
           <div class="user-profile">
             <div class="avatar user-avatar">MS</div>
           </div>
@@ -18,11 +31,10 @@
           <button  class="btn-primary" @click="() => router.push('/event/addEvent')">+ Add Event</button>
         </div>
       </header>
+      <!-- FIN DU HEADER -->
 
       <div class="dashboard-grid">
-        
         <div class="left-column">
-          
           <div class="stats-row">
             <div class="stat-card" v-for="(stat, index) in stats" :key="index">
               <div class="stat-icon" :style="{ color: stat.color }">{{ stat.initials }}</div>
@@ -66,11 +78,9 @@
               </div>
             </div>
           </section>
-
         </div>
 
         <div class="right-column">
-          
           <aside class="widget notifications-widget">
             <div class="widget-header">
               <h2>Notification</h2>
@@ -98,37 +108,14 @@
                       fill="none" stroke="var(--primary-color)" stroke-width="3" stroke-linecap="round"/>
               </svg>
               <div class="chart-labels">
-                <span>06.00</span>
-                <span>07.00</span>
-                <span>08.00</span>
-                <span>09.00</span>
+                <span>06.00</span><span>07.00</span><span>08.00</span><span>09.00</span>
               </div>
             </div>
             <button class="show-more-btn">Show More ></button>
           </aside>
-
         </div>
       </div>
     </main>
-
-    <aside class="sidebar">
-      <div class="logo hidden-mobile">
-        <div class="logo-icon">C</div>
-      </div>
-      <nav class="nav-menu">
-        <button class="nav-item active">📊</button>
-        <button class="nav-item">📈</button>
-        <button class="nav-item">📋</button>
-        <button class="nav-item">📅</button>
-        <button class="nav-item hidden-mobile">💬</button>
-        <button class="nav-item hidden-mobile">👥</button>
-        <button class="nav-item hidden-mobile">⚙️</button>
-      </nav>
-      <div class="logout hidden-mobile">
-        <button class="nav-item">🚪</button>
-      </div>
-    </aside>
-
   </div>
 </template>
 
@@ -138,7 +125,6 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-// Remplacement de data() par la Composition API (setup)
 const stats = ref([
   { initials: 'EC', title: 'Economy Class', current: 128, total: 240, color: '#3498db' },
   { initials: 'MC', title: 'Master Class', current: 80, total: 150, color: 'var(--primary-color)' },
@@ -167,7 +153,6 @@ const notifications = ref([
 </script>
 
 <style scoped>
-/* Variables */
 :root {
   --primary-color: #F2F864;
   --secondary-color: #EFF662;
@@ -186,13 +171,10 @@ const notifications = ref([
   padding: 0;
 }
 
-/* =========================================
-   1. STYLES DE BASE (MOBILE FIRST)
-   ========================================= */
-
+/* Base Layout */
 .dashboard-container {
   display: flex;
-  flex-direction: column; /* Disposition verticale sur mobile */
+  flex-direction: column;
   height: 100vh;
   background-color: var(--background-color);
   color: var(--my-white);
@@ -200,179 +182,57 @@ const notifications = ref([
   overflow: hidden;
 }
 
-/* Main Content (Mobile) */
 .main-content {
   flex: 1;
   padding: 1rem;
   overflow-y: auto;
-  padding-bottom: 80px; /* Espace pour la barre de navigation du bas */
+  padding-bottom: 80px;
 }
 
-/* Header (Mobile) */
-.top-header {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.mobile-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.top-header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.header-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  background-color: var(--tertiary-color);
-  border: 1px solid var(--secondary-light-color);
-  border-radius: 8px;
-  padding: 0.5rem;
-  flex: 1;
-  min-width: 200px;
-}
-
-.search-bar input {
-  background: none;
-  border: none;
-  color: var(--my-white);
-  outline: none;
-  margin-left: 0.5rem;
+/* Header mis à jour */
+.top-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 1.5rem; 
   width: 100%;
 }
+.header-title h1 { font-size: 1.5rem; font-weight: 700; }
+.header-actions { display: flex; align-items: center; gap: 1rem; }
 
-.btn-primary {
-  background-color: var(--primary-color);
-  color: var(--background-color);
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.avatar {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
+.search-bar { display: flex; align-items: center; background-color: var(--tertiary-color); border: 1px solid var(--secondary-light-color); border-radius: 8px; padding: 0.5rem; flex: 1; min-width: 200px; }
+.search-bar input { background: none; border: none; color: var(--my-white); outline: none; margin-left: 0.5rem; width: 100%; }
+.btn-primary { background-color: var(--primary-color); color: var(--background-color); border: none; border-radius: 8px; padding: 0.6rem 1rem; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+.avatar { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
 .user-avatar { background-color: var(--background-green-color); }
 
-/* Dashboard Grid (Mobile = 1 colonne) */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
+/* Dashboard Grid */
+.dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+.left-column, .right-column { display: flex; flex-direction: column; gap: 1.5rem; }
+.stats-row { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 
-.left-column, .right-column {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* Stats (Mobile = 1 colonne) */
-.stats-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-.stat-card {
-  background-color: var(--tertiary-color);
-  border: 1px solid var(--secondary-light-color);
-  border-radius: 12px;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.stat-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: var(--background-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  border: 1px solid var(--secondary-light-color);
-}
-
+/* Cards & Widgets */
+.stat-card, .event-card, .widget { background-color: var(--tertiary-color); border: 1px solid var(--secondary-light-color); border-radius: 12px; padding: 1rem; }
+.stat-card { display: flex; align-items: center; gap: 1rem; }
+.stat-icon { width: 40px; height: 40px; border-radius: 50%; background-color: var(--background-color); display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid var(--secondary-light-color); }
 .stat-info h3 { font-size: 0.9rem; margin-bottom: 0.2rem; }
 .stat-info p { font-size: 0.75rem; color: #a0a0a0; }
 .stat-info strong { color: var(--my-white); }
 
-/* Events (Mobile = 1 colonne) */
-.section-header, .widget-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
+.section-header, .widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .section-header h2, .widget-header h2 { font-size: 1.1rem; }
 .more-options { background: none; border: none; color: #a0a0a0; cursor: pointer; }
 
-.events-row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-.event-card, .widget {
-  background-color: var(--tertiary-color);
-  border: 1px solid var(--secondary-light-color);
-  border-radius: 12px;
-  padding: 1rem;
-}
-
-.event-image {
-  width: 100%;
-  height: 120px;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-}
-
+.events-row { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.event-image { width: 100%; height: 120px; border-radius: 8px; margin-bottom: 1rem; }
 .event-card h3 { font-size: 0.95rem; margin-bottom: 0.5rem; }
 .event-card p { font-size: 0.8rem; color: #a0a0a0; }
-
-.date-badge {
-  color: var(--primary-color);
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 0.8rem;
-}
+.date-badge { color: var(--primary-color); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.8rem; }
 
 .attendees { display: flex; margin-top: 1rem; }
-.avatar-sm {
-  width: 25px; height: 25px;
-  border-radius: 50%;
-  border: 2px solid var(--tertiary-color);
-  margin-left: -8px;
-}
+.avatar-sm { width: 25px; height: 25px; border-radius: 50%; border: 2px solid var(--tertiary-color); margin-left: -8px; }
 .avatar-sm:first-child { margin-left: 0; }
 
-/* Widgets */
 .notification-item { display: flex; gap: 1rem; margin-bottom: 1rem; }
 .notif-content p { font-size: 0.85rem; margin-bottom: 0.3rem; }
 .notif-content .time { font-size: 0.7rem; color: #a0a0a0; }
@@ -381,121 +241,25 @@ const notifications = ref([
 .chart-labels { display: flex; justify-content: space-between; margin-top: 1rem; font-size: 0.7rem; color: #a0a0a0; }
 .show-more-btn { background: none; border: none; color: var(--primary-color); font-weight: 600; display: block; margin: 1rem auto 0; }
 
-/* Navigation / Sidebar (Mobile = Barre en bas) */
-.sidebar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 60px;
-  background-color: var(--tertiary-color);
-  border-top: 1px solid var(--secondary-light-color);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 100;
-}
-
-.nav-menu {
-  display: flex;
-  width: 100%;
-  justify-content: space-around;
-}
-
-.nav-item {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #a0a0a0;
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
-.nav-item.active, .nav-item:hover { color: var(--primary-color); }
-
 .hidden-mobile { display: none; }
 
-
-/* =========================================
-   2. STYLES TABLETTE (>= 768px)
-   ========================================= */
+/* Tablette (1 colonne sur la grille principale conservée) */
 @media (min-width: 768px) {
   .stats-row { grid-template-columns: repeat(3, 1fr); }
   .events-row { grid-template-columns: repeat(2, 1fr); }
-  
-  .top-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .mobile-header-top {
-    flex: 1;
-  }
-
-  .user-profile {
-    display: none; /* Caché ici car on va le mettre avec les actions sur desktop */
-  }
 }
 
-/* =========================================
-   3. STYLES DESKTOP (>= 1024px)
-   ========================================= */
+/* Desktop (2 colonnes) */
 @media (min-width: 1024px) {
-  /* Restauration de la disposition classique Desktop */
-  .dashboard-container {
-    flex-direction: row;
-  }
-
-  /* La Sidebar repasse à gauche */
-  .sidebar {
-    position: static;
-    width: 80px;
-    height: 100vh;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 1.5rem 0;
-    border-top: none;
-    border-right: 1px solid var(--secondary-light-color);
-  }
-
-  .nav-menu {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .hidden-mobile { display: flex; } /* Réaffichage des éléments masqués sur mobile */
-
-  .logo-icon {
-    width: 40px; height: 40px;
-    background-color: var(--primary-color);
-    color: var(--background-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-
-  .main-content {
-    padding: 2rem;
-  }
-
-  /* Header Desktop */
+  .dashboard-container { flex-direction: row; }
+  .main-content { padding: 2rem; padding-bottom: 2rem; }
+  .hidden-mobile { display: block; } /* Modifié pour le bouton icon-btn */
   .top-header h1 { font-size: 1.8rem; }
   
-  /* Grille Principale Desktop (2 colonnes) */
-  .dashboard-grid {
-    grid-template-columns: 2.5fr 1fr;
-    gap: 2rem;
-  }
-
-  /* Cartes d'événements Desktop (4 colonnes) */
+  /* Grille à 2 colonnes confirmée */
+  .dashboard-grid { grid-template-columns: 2.5fr 1fr; gap: 2rem; }
   .events-row { grid-template-columns: repeat(4, 1fr); }
-
-  .icon-btn {
-    background: none; border: none; font-size: 1.2rem; cursor: pointer;
-  }
+  .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--my-white); display: flex; align-items: center; justify-content: center; }
+  .icon-btn svg { width: 24px; height: 24px; }
 }
 </style>
