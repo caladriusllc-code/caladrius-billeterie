@@ -4,23 +4,26 @@
     <DashboardSidebar />
     
     <main class="main-content">
+      
+      <!-- HEADER MIS À JOUR -->
       <header class="top-header">
-        <div class="mobile-header-top">
+        <div class="header-title">
           <h1>Dashboard</h1>
-          <div class="user-profile">
-            <div class="avatar user-avatar">MS</div>
-          </div>
         </div>
         
         <div class="header-actions">
-          <button class="btn-primary">+ Add Event</button>
+          <navBarButton />
           <button class="icon-btn hidden-mobile">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
             </svg>
           </button>
+          <div class="user-profile">
+            <div class="avatar user-avatar">MS</div>
+          </div>
         </div>
       </header>
+      <!-- FIN DU HEADER -->
 
       <div class="dashboard-grid">
         <div class="left-column">
@@ -110,8 +113,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-// Import du composant enfant
 import DashboardSidebar from '../../components/navbar/dashboardSidebar.vue'
+import navBarButton from '../../components/buttons/navBarButton.vue';
 
 const stats = ref([
   { initials: 'EC', title: 'Economy Class', current: 128, total: 240, color: '#3498db' },
@@ -141,7 +144,6 @@ const notifications = ref([
 </script>
 
 <style scoped>
-/* Variables globales pour ce composant */
 :root {
   --primary-color: #F2F864;
   --secondary-color: #EFF662;
@@ -178,11 +180,17 @@ const notifications = ref([
   padding-bottom: 80px;
 }
 
-/* Header */
-.top-header { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
-.mobile-header-top { display: flex; justify-content: space-between; align-items: center; }
-.top-header h1 { font-size: 1.5rem; font-weight: 700; }
-.header-actions { display: flex; align-items: center; justify-content: center; gap: 1rem; }
+/* Header mis à jour */
+.top-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 1.5rem; 
+  width: 100%;
+}
+.header-title h1 { font-size: 1.5rem; font-weight: 700; }
+.header-actions { display: flex; align-items: center; gap: 1rem; }
+
 .search-bar { display: flex; align-items: center; background-color: var(--tertiary-color); border: 1px solid var(--secondary-light-color); border-radius: 8px; padding: 0.5rem; flex: 1; min-width: 200px; }
 .search-bar input { background: none; border: none; color: var(--my-white); outline: none; margin-left: 0.5rem; width: 100%; }
 .btn-primary { background-color: var(--primary-color); color: var(--background-color); border: none; border-radius: 8px; padding: 0.6rem 1rem; font-weight: 600; cursor: pointer; flex-shrink: 0; }
@@ -226,23 +234,23 @@ const notifications = ref([
 
 .hidden-mobile { display: none; }
 
-/* Tablette */
+/* Tablette (1 colonne sur la grille principale conservée) */
 @media (min-width: 768px) {
   .stats-row { grid-template-columns: repeat(3, 1fr); }
   .events-row { grid-template-columns: repeat(2, 1fr); }
-  .top-header { flex-direction: row; justify-content: space-between; align-items: center; }
-  .mobile-header-top { flex: 1; }
-  .user-profile { display: none; }
 }
 
-/* Desktop */
+/* Desktop (2 colonnes) */
 @media (min-width: 1024px) {
   .dashboard-container { flex-direction: row; }
   .main-content { padding: 2rem; padding-bottom: 2rem; }
-  .hidden-mobile { display: flex; }
+  .hidden-mobile { display: block; } /* Modifié pour le bouton icon-btn */
   .top-header h1 { font-size: 1.8rem; }
+  
+  /* Grille à 2 colonnes confirmée */
   .dashboard-grid { grid-template-columns: 2.5fr 1fr; gap: 2rem; }
   .events-row { grid-template-columns: repeat(4, 1fr); }
-  .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+  .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--my-white); display: flex; align-items: center; justify-content: center; }
+  .icon-btn svg { width: 24px; height: 24px; }
 }
 </style>
