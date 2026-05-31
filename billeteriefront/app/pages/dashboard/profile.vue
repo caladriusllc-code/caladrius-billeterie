@@ -15,7 +15,7 @@
                     <span>🔍</span>
                     <input type="text" placeholder="Search event..." />
                     </div>
-                    <button class="btn-primary">+ Add Event</button>
+                    <button class="btn-primary" @click="router.push('/event/addEvent')">+ Add Event</button>
                     <button class="icon-btn hidden-mobile">🔔</button>
                 </div>
             </header>
@@ -180,18 +180,6 @@ const notifications = ref([
 </script>
 
 <style scoped>
-:root {
-  --primary-color: #F2F864;
-  --secondary-color: #EFF662;
-  --secondary-dark-color: #1f7b31;
-  --tertiary-color: #222222;
-  --background-color: #181818;
-  --my-white: #fff;
-  --secondary-light-color: #515151;
-  --background-green-color: #3b8d50;
-  --error-color: rgb(255, 86, 86);
-}
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -229,7 +217,7 @@ const notifications = ref([
 
 .search-bar { display: flex; align-items: center; background-color: var(--tertiary-color); border: 1px solid var(--secondary-light-color); border-radius: 8px; padding: 0.5rem; flex: 1; min-width: 200px; }
 .search-bar input { background: none; border: none; color: var(--my-white); outline: none; margin-left: 0.5rem; width: 100%; }
-.btn-primary { background-color: var(--primary-color); color: var(--background-color); border: none; border-radius: 8px; padding: 0.6rem 1rem; font-weight: 600; cursor: pointer; flex-shrink: 0; }
+.btn-primary { background-color: var(--primary-color); color: var(--background-color); border: none; border-radius: 8px; padding: 0.6rem 1rem; font-weight: 600; cursor: pointer; flex-shrink: 0; width: 100%; }
 .avatar { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
 .user-avatar { background-color: var(--background-green-color); }
 
