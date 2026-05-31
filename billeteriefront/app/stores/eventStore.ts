@@ -1,7 +1,5 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-// Si vous utilisez axios, décommentez la ligne suivante :
-// import axios from 'axios';
 
 // 1. Interfaces basées sur votre modèle Django
 export interface EventModel {
@@ -43,31 +41,24 @@ export const useEventStore = defineStore('event', () => {
     isLoading.value = true;
     error.value = null;
 
+    // Récupération de l'URL de base de l'API via le runtimeConfig de Nuxt
+    const config = useRuntimeConfig();
+
     try {
-      // EXEMPLE AVEC AXIOS :
-      // const response = await axios.post<EventModel>('VOTRE_API_URL/events/', payload);
-      // events.value.push(response.data);
+      // Utilisation de $fetch (natif à Nuxt 3)
+      const newEvent = await $fetch<EventModel>(`${config.public.apiBase}/events/`, {
+        method: 'POST',
+        body: payload
+      });
       
-      // Simulation d'un appel réseau (à remplacer par votre appel API réel)
-      console.log('Données envoyées au backend :', payload);
-      
-      await new Promise(resolve => setTimeout(resolve, 1000)); 
-      
-      // Simulation du retour backend (avec ID et timestamps)
-      const newEvent: EventModel = {
-        ...payload,
-        id: crypto.randomUUID(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
-      events.value.unshift(newEvent); // Ajoute au début de la liste
+      // Ajoute l'évènement renvoyé par Django au début de la liste
+      events.value.unshift(newEvent); 
       return newEvent;
 
     } catch (err: any) {
       console.error('Erreur lors de la création:', err);
-      // Gestion d'erreur typique (ex: erreurs de validation Django)
-      error.value = err.response?.data?.detail || "Impossible de créer l'évènement.";
+      // $fetch stocke la réponse d'erreur dans err.data (différent de err.response.data d'Axios)
+      error.value = err.data?.detail || "Impossible de créer l'évènement.";
       throw err;
     } finally {
       isLoading.value = false;
@@ -80,10 +71,15 @@ export const useEventStore = defineStore('event', () => {
   const fetchEvents = async () => {
     isLoading.value = true;
     error.value = null;
+    
+    const config = useRuntimeConfig();
+
     try {
-      // const response = await axios.get<EventModel[]>('VOTRE_API_URL/events/');
-      // events.value = response.data;
+      // Un simple appel GET avec $fetch
+      const data = await $fetch<EventModel[]>(`${config.public.apiBase}/events/`);
+      events.value = data;
     } catch (err: any) {
+      console.error('Erreur de chargement:', err);
       error.value = "Impossible de charger les évènements.";
     } finally {
       isLoading.value = false;
