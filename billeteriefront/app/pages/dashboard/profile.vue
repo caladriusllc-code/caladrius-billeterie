@@ -175,6 +175,7 @@ const notifications = ref([
   { name: 'Greysia Polii', action: '2 master class', time: '3 minute ago', highlightColor: 'var(--primary-color)' },
   { name: 'Stephanie Angelina', action: '2 business class', time: '3 minute ago', highlightColor: 'var(--background-green-color)' }
 ]);
+
 </script>
 
 <style scoped>
