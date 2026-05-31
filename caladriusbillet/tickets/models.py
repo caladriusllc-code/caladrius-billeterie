@@ -1,93 +1,42 @@
-# tickets/models.py
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.apps import apps
 import uuid
 import random
 import string
+import time
 from io import BytesIO
 from django.core.files.base import ContentFile
-import time
-
-# Optionnel - Commentez si vous n'avez pas qrcode
-# import qrcode
+from django.conf import settings
 
 User = get_user_model()
-
-
-class Guest(models.Model):
-    """Modèle pour les invités/acheteurs sans compte"""
-    
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    
-    first_name = models.CharField(max_length=100, verbose_name="Prénom")
-    last_name = models.CharField(max_length=100, verbose_name="Nom")
-    email = models.EmailField(unique=True, verbose_name="Email")
-    phone = models.CharField(max_length=20, verbose_name="Téléphone")
-    
-    address = models.TextField(blank=True, null=True, verbose_name="Adresse")
-    city = models.CharField(max_length=100, blank=True, null=True, verbose_name="Ville")
-    postal_code = models.CharField(max_length=20, blank=True, null=True, verbose_name="Code postal")
-    country = models.CharField(max_length=100, default='France', verbose_name="Pays")
-    
-    is_active = models.BooleanField(default=True, verbose_name="Actif")
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    last_purchase_at = models.DateTimeField(null=True, blank=True)
-    
-    notes = models.TextField(blank=True, verbose_name="Notes")
-    
-    # ✅ SUPPRIMÉ : le champ guest qui était en trop
-    
-    class Meta:
-        verbose_name = "Invité"
-        verbose_name_plural = "Invités"
-        ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['email'], name='guest_email_idx'),
-            models.Index(fields=['phone'], name='guest_phone_idx'),
-            models.Index(fields=['last_name', 'first_name'], name='guest_name_idx'),
-        ]
-    
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
-    
-    @property
-    def total_purchases(self):
-        Ticket = apps.get_model('tickets', 'Ticket')
-        return Ticket.objects.filter(guest=self).count()
-    
-    def __str__(self):
-        return f"{self.full_name} - {self.email}"
 
 
 class Ticket(models.Model):
     """Modèle pour générer des tickets d'événements"""
     
+    STATUS_CHOICES = [
+        ('valid', 'Valide'),
+        ('used', 'Utilisé'),
+        ('cancelled', 'Annulé'),
+    ]
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ticket_number = models.CharField(max_length=50, unique=True, editable=False)
-    qr_code = models.ImageField(upload_to='tickets/qrcodes/', blank=True, null=True)
+    qr_code = models.ImageField(upload_to='tickets/qrcodes/', blank=True, null=True, editable=False)
+    
+    # ✅ AJOUT : Lien direct vers la commande et son statut
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='generated_tickets', null=True, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='valid')
+    scanned_at = models.DateTimeField(null=True, blank=True)
     
     event = models.ForeignKey('events.Event', on_delete=models.CASCADE, related_name='tickets')
     ticket_type = models.ForeignKey('events.TicketType', on_delete=models.CASCADE, related_name='tickets')
-    
-    # ✅ CORRIGÉ : guest pointe vers Guest (pas User)
-    guest = models.ForeignKey(
-        Guest,  # ← Maintenant correct
-        on_delete=models.SET_NULL,
-        null=True, 
-        blank=True,
-        related_name='tickets'
-    )
     
     attendee_name = models.CharField(max_length=200)
     attendee_email = models.EmailField()
     attendee_phone = models.CharField(max_length=20, blank=True)
     
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity = models.PositiveIntegerField(default=1)
     seat_number = models.CharField(max_length=20, blank=True, null=True)
     row_number = models.CharField(max_length=10, blank=True, null=True)
     
@@ -97,29 +46,32 @@ class Ticket(models.Model):
         ordering = ['-created_at']
     
     def save(self, *args, **kwargs):
+        # 1. Assurer la génération du numéro de ticket
         if not self.ticket_number:
             self.ticket_number = self.generate_ticket_number()
+        
+        # 2. 🔥 FIX : Générer le QR code AVANT de sauvegarder en BDD
+        if not self.qr_code:
+            self.generate_qr_code()
+            
         super().save(*args, **kwargs)
     
     def generate_ticket_number(self):
-        prefix = self.event.slug[:4].upper() if self.event else "TKT"
+        prefix = self.event.slug[:4].upper() if self.event and getattr(self.event, 'slug', None) else "TKT"
         random_part = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
         return f"{prefix}-{random_part}"
     
     def generate_qr_code(self):
-        """Génère un QR code pour le ticket - Nécessite qrcode"""
+        """Génère un QR code sécurisé pour le ticket"""
         try:
             import qrcode
-            qr_data = {
-                'ticket_id': str(self.id),
-                'ticket_number': self.ticket_number,
-                'event': self.event.title,
-                'event_date': str(self.event.start_date),
-                'attendee': self.attendee_name,
-            }
+            
+            # 🔥 SÉCURITÉ : On ne met QUE l'ID (UUID) unique dans le QR Code.
+            # L'application de scan interrogera le backend avec cet ID pour éviter la fraude.
+            qr_data = str(self.id)
             
             qr = qrcode.QRCode(version=1, box_size=10, border=4)
-            qr.add_data(str(qr_data))
+            qr.add_data(qr_data)
             qr.make(fit=True)
             
             img = qr.make_image(fill_color="black", back_color="white")
@@ -127,6 +79,8 @@ class Ticket(models.Model):
             buffer = BytesIO()
             img.save(buffer, format='PNG')
             file_name = f"ticket_{self.ticket_number}.png"
+            
+            # save=False pour éviter une récursion/boucle infinie sur la méthode save()
             self.qr_code.save(file_name, ContentFile(buffer.getvalue()), save=False)
             
         except ImportError:
@@ -136,16 +90,16 @@ class Ticket(models.Model):
     
     @property
     def purchaser_name(self):
-        """Nom de l'acheteur"""
-        if self.guest:
-            return self.guest.full_name  # ✅ Maintenant fonctionne
+        """Nom de l'acheteur (via la commande s'il y en a une, sinon le participant)"""
+        if self.order and self.order.guest:
+            return self.order.guest.full_name
         return self.attendee_name
     
     @property
     def purchaser_email(self):
         """Email de l'acheteur"""
-        if self.guest:
-            return self.guest.email  # ✅ Maintenant fonctionne
+        if self.order and self.order.guest:
+            return self.order.guest.email
         return self.attendee_email
     
     def __str__(self):
@@ -165,8 +119,8 @@ class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     order_number = models.CharField(max_length=50, unique=True, editable=False)
     
-    # ✅ Client - pointe vers Guest
-    guest = models.ForeignKey(Guest, on_delete=models.CASCADE, related_name='orders')
+    # ✅ CORRECTION : On pointe directement vers l'utilisateur Django
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
     
     # Informations de la commande
     event = models.ForeignKey('events.Event', on_delete=models.CASCADE, related_name='orders')
@@ -201,7 +155,7 @@ class Order(models.Model):
         return self.items.count()
     
     def __str__(self):
-        return f"{self.order_number} - {self.guest.email} - {self.status}"
+        return f"{self.order_number} - {self.user.email} - {self.status}"
 
 
 class OrderItem(models.Model):
