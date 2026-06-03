@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
@@ -71,7 +72,8 @@ ROOT_URLCONF = 'caladriusbillet.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 📑 MODIFICATION ICI : On enregistre le dossier templates global de la racine du projet
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -119,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr-fr'  # Changé en français pour la gestion des formats de dates locales
 
 TIME_ZONE = 'UTC'
 
@@ -155,3 +157,20 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Seulement en dev
 CORS_ALLOW_ALL_ORIGINS = True 
+
+# Configuration des fichiers médias (Téléchargements, QR codes générés, images)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# En développement : Affiche les e-mails dans le terminal
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# En production (Exemple avec Brevo/Sendinblue, Mailgun, etc.) :
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp-relay.brevo.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'ton-adresse@email.com'
+# EMAIL_HOST_PASSWORD = 'ton-mot-de-passe-smtp'
+
+DEFAULT_FROM_EMAIL = 'Billetterie Pro <noreply@tondomaine.com>'

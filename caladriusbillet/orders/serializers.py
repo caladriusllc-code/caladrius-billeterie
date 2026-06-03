@@ -10,7 +10,7 @@ class OrderItemInputSerializer(serializers.Serializer):
     holder_name = serializers.CharField(max_length=200, required=False, allow_blank=True)
 
 class TicketDetailSerializer(serializers.ModelSerializer):
-    """Affiche les détails d'un billet généré avec son QR Code"""
+    """Affiche les détails d'un billet généré"""
     ticket_type_name = serializers.CharField(source='order_item.ticket_type.name', read_only=True)
 
     class Meta:
@@ -54,7 +54,6 @@ class OrderSerializer(serializers.ModelSerializer):
         
         # 2. Sécurité : Vérification correcte d'un utilisateur anonyme / non connecté
         if not user or user.is_anonymous:
-            # On vérifie les données brutes fournies dans le payload initial (car guest_email/guest_name ne sont pas dans attrs s'ils n'ont pas été envoyés)
             guest_email = attrs.get('guest_email')
             guest_name = attrs.get('guest_name')
             
@@ -76,6 +75,7 @@ class OrderSerializer(serializers.ModelSerializer):
         if request and request.user and request.user.is_authenticated:
             user = request.user
 
+        # L'utilisation de transaction.atomic garantit que si une seule étape plante, rien n'est écrit
         with transaction.atomic():
             try:
                 first_ticket_type = TicketType.objects.get(id=cart_items_data[0]['ticket_type_id'])
@@ -112,12 +112,14 @@ class OrderSerializer(serializers.ModelSerializer):
                 if ticket_type.quantity_available < quantity:
                     raise serializers.ValidationError({"error": f"Stock insuffisant pour '{ticket_type.name}'."})
 
+                # Soustraction des stocks
                 ticket_type.quantity_available -= quantity
                 ticket_type.save()
 
                 subtotal = ticket_type.price * quantity
                 total_amount += subtotal
 
+                # Création de la ligne de commande
                 order_item = OrderItem.objects.create(
                     order=order, ticket_type=ticket_type, quantity=quantity, unit_price=ticket_type.price
                 )
@@ -128,7 +130,6 @@ class OrderSerializer(serializers.ModelSerializer):
                     if holder:
                         final_holder_name = holder
                     elif user:
-                        # On utilise username (ou email si ton CustomUser n'a pas de username)
                         final_holder_name = getattr(user, 'username', user.email)
                     else:
                         final_holder_name = guest_name
@@ -138,7 +139,16 @@ class OrderSerializer(serializers.ModelSerializer):
                         holder_name=final_holder_name
                     )
 
+            # Mise à jour finale du montant global de la commande
             order.total_amount = total_amount
             order.save()
+
+        # 💡 DÉCLENCHEMENT DE L'EMAIL (Hors de la transaction pour des raisons de performance)
+        try:
+            from .emails import send_ticket_email
+            send_ticket_email(order)
+        except Exception as e:
+            # On log l'erreur pour ne pas faire planter l'achat de l'utilisateur si le serveur d'e-mail a un problème
+            print(f"Erreur d'envoi d'email lors de la commande {order.order_number}: {str(e)}")
 
         return order

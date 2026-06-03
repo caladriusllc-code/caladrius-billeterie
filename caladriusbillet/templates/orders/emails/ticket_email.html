@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vos Tickets d'Accès</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 550px; background: #ffffff; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { margin: 0; font-size: 20px; }
+        h3 { margin: 5px 0 0 0; font-size: 16px; font-weight: normal; opacity: 0.9; }
+        p { line-height: 1.5; color: #4a5568; }
+        .event-banner { background: #1a0dab; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 25px; }
+        .ticket-card { border: 1px solid #e2e8f0; border-left: 5px solid #1a0dab; padding: 20px; margin-bottom: 15px; border-radius: 6px; background-color: #f8fafc; position: relative; }
+        .ticket-header { font-weight: bold; font-size: 15px; color: #1a0dab; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .info-row { margin: 6px 0; font-size: 14px; }
+        .info-label { color: #718096; font-weight: 500; }
+        .code-box { margin-top: 12px; background: #edf2f7; padding: 10px; border-radius: 6px; text-align: center; border: 1px dashed #cbd5e0; }
+        .code { font-family: 'Courier New', Courier, monospace; font-size: 20px; font-weight: bold; color: #2d3748; letter-spacing: 1px; }
+        .footer { margin-top: 35px; text-align: center; font-size: 11px; color: #a0aec0; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="event-banner">
+            <h2>🎟️ Confirmation de Commande</h2>
+            <h3>{{ order.event.title }}</h3>
+        </div>
+        
+        <p>Bonjour <strong>{{ buyer_name }}</strong>,</p>
+        <p>Merci pour votre confiance. Votre paiement a été validé. Voici votre confirmation de réservation pour la commande numéro <strong>{{ order.order_number }}</strong> :</p>
+        
+        {% for item in items %}
+            {% for ticket in item.tickets.all %}
+                <div class="ticket-card">
+                    <div class="ticket-header">🎫 {{ item.ticket_type_name }}</div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">Porteur du billet :</span> 
+                        <strong>{{ ticket.holder_name }}</strong>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">Événement :</span> {{ order.event.title }}
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">Lieu :</span> {{ order.event.venue_name }} ({{ order.event.city }})
+                    </div>
+
+                    <div class="code-box">
+                        <div style="font-size: 11px; color: #718096; text-transform: uppercase; margin-bottom: 4px; font-weight: bold;">Code unique d'accès</div>
+                        <span class="code">{{ ticket.unique_code }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        
+        <div class="footer">
+            <p><strong>Consignes importantes :</strong> Ce mail fait office de billet officiel. Présentez ce message (sur votre smartphone ou imprimé) à l'entrée. Le code unique ci-dessus ne peut être validé qu'une seule fois au guichet.</p>
+            <p>© 2026 Votre Plateforme de Billetterie — Tous droits réservés.</p>
+        </div>
+    </div>
+</body>
+</html>
