@@ -8,6 +8,7 @@ from django.core.files import File
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from events.models import Event
 
 class Order(models.Model):
     """Commande de tickets"""
@@ -30,7 +31,7 @@ class Order(models.Model):
     guest_name = models.CharField(max_length=150, blank=True, null=True, help_text="Nom/Prénom de l'acheteur invité")
     
     # Informations complémentaires de la commande
-    event = models.ForeignKey('events.Event', on_delete=models.CASCADE, related_name='orders')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='orders')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     
