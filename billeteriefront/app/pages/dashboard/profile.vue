@@ -149,9 +149,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-
 const router = useRouter();
 
+// Remplacement de data() par la Composition API (setup)
 const stats = ref([
   { initials: 'EC', title: 'Economy Class', current: 128, total: 240, color: '#3498db' },
   { initials: 'MC', title: 'Master Class', current: 80, total: 150, color: 'var(--primary-color)' },
@@ -181,16 +181,32 @@ const notifications = ref([
 </script>
 
 <style scoped>
+/* Variables */
+:root {
+  --primary-color: #F2F864;
+  --secondary-color: #EFF662;
+  --secondary-dark-color: #1f7b31;
+  --tertiary-color: #222222;
+  --background-color: #181818;
+  --my-white: #fff;
+  --secondary-light-color: #515151;
+  --background-green-color: #3b8d50;
+  --error-color: rgb(255, 86, 86);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* Base Layout */
+/* =========================================
+   1. STYLES DE BASE (MOBILE FIRST)
+   ========================================= */
+
 .dashboard-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Disposition verticale sur mobile */
   height: 100vh;
   background-color: var(--background-color);
   color: var(--my-white);
@@ -198,57 +214,179 @@ const notifications = ref([
   overflow: hidden;
 }
 
+/* Main Content (Mobile) */
 .main-content {
   flex: 1;
   padding: 1rem;
   overflow-y: auto;
-  padding-bottom: 80px;
+  padding-bottom: 80px; /* Espace pour la barre de navigation du bas */
 }
 
-/* Header mis à jour */
-.top-header { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  margin-bottom: 1.5rem; 
+/* Header (Mobile) */
+.top-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.mobile-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: var(--tertiary-color);
+  border: 1px solid var(--secondary-light-color);
+  border-radius: 8px;
+  padding: 0.5rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-bar input {
+  background: none;
+  border: none;
+  color: var(--my-white);
+  outline: none;
+  margin-left: 0.5rem;
   width: 100%;
 }
-.header-title h1 { font-size: 1.5rem; font-weight: 700; }
-.header-actions { display: flex; align-items: center; gap: 1rem; }
 
-.search-bar { display: flex; align-items: center; background-color: var(--tertiary-color); border: 1px solid var(--secondary-light-color); border-radius: 8px; padding: 0.5rem; flex: 1; min-width: 200px; }
-.search-bar input { background: none; border: none; color: var(--my-white); outline: none; margin-left: 0.5rem; width: 100%; }
-.btn-primary { background-color: var(--primary-color); color: var(--background-color); border: none; border-radius: 8px; padding: 0.6rem 1rem; font-weight: 600; cursor: pointer; flex-shrink: 0; width: 100%; }
-.avatar { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; }
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
 .user-avatar { background-color: var(--background-green-color); }
 
-/* Dashboard Grid */
-.dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-.left-column, .right-column { display: flex; flex-direction: column; gap: 1.5rem; }
-.stats-row { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+/* Dashboard Grid (Mobile = 1 colonne) */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
 
-/* Cards & Widgets */
-.stat-card, .event-card, .widget { background-color: var(--tertiary-color); border: 1px solid var(--secondary-light-color); border-radius: 12px; padding: 1rem; }
-.stat-card { display: flex; align-items: center; gap: 1rem; }
-.stat-icon { width: 40px; height: 40px; border-radius: 50%; background-color: var(--background-color); display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid var(--secondary-light-color); }
+.left-column, .right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Stats (Mobile = 1 colonne) */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.stat-card {
+  background-color: var(--tertiary-color);
+  border: 1px solid var(--secondary-light-color);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--background-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 1px solid var(--secondary-light-color);
+}
+
 .stat-info h3 { font-size: 0.9rem; margin-bottom: 0.2rem; }
 .stat-info p { font-size: 0.75rem; color: #a0a0a0; }
 .stat-info strong { color: var(--my-white); }
 
-.section-header, .widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+/* Events (Mobile = 1 colonne) */
+.section-header, .widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .section-header h2, .widget-header h2 { font-size: 1.1rem; }
 .more-options { background: none; border: none; color: #a0a0a0; cursor: pointer; }
 
-.events-row { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-.event-image { width: 100%; height: 120px; border-radius: 8px; margin-bottom: 1rem; }
+.events-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.event-card, .widget {
+  background-color: var(--tertiary-color);
+  border: 1px solid var(--secondary-light-color);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.event-image {
+  width: 100%;
+  height: 120px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
 .event-card h3 { font-size: 0.95rem; margin-bottom: 0.5rem; }
 .event-card p { font-size: 0.8rem; color: #a0a0a0; }
-.date-badge { color: var(--primary-color); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.8rem; }
+
+.date-badge {
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
 
 .attendees { display: flex; margin-top: 1rem; }
-.avatar-sm { width: 25px; height: 25px; border-radius: 50%; border: 2px solid var(--tertiary-color); margin-left: -8px; }
+.avatar-sm {
+  width: 25px; height: 25px;
+  border-radius: 50%;
+  border: 2px solid var(--tertiary-color);
+  margin-left: -8px;
+}
 .avatar-sm:first-child { margin-left: 0; }
 
+/* Widgets */
 .notification-item { display: flex; gap: 1rem; margin-bottom: 1rem; }
 .notif-content p { font-size: 0.85rem; margin-bottom: 0.3rem; }
 .notif-content .time { font-size: 0.7rem; color: #a0a0a0; }
@@ -294,23 +432,87 @@ const notifications = ref([
 
 .hidden-mobile { display: none; }
 
-/* Tablette (1 colonne sur la grille principale conservée) */
+
+/* =========================================
+   2. STYLES TABLETTE (>= 768px)
+   ========================================= */
 @media (min-width: 768px) {
   .stats-row { grid-template-columns: repeat(3, 1fr); }
   .events-row { grid-template-columns: repeat(2, 1fr); }
+  
+  .top-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .mobile-header-top {
+    flex: 1;
+  }
+
+  .user-profile {
+    display: none; /* Caché ici car on va le mettre avec les actions sur desktop */
+  }
 }
 
-/* Desktop (2 colonnes) */
+/* =========================================
+   3. STYLES DESKTOP (>= 1024px)
+   ========================================= */
 @media (min-width: 1024px) {
-  .dashboard-container { flex-direction: row; }
-  .main-content { padding: 2rem; padding-bottom: 2rem; }
-  .hidden-mobile { display: block; } /* Modifié pour le bouton icon-btn */
+  /* Restauration de la disposition classique Desktop */
+  .dashboard-container {
+    flex-direction: row;
+  }
+
+  /* La Sidebar repasse à gauche */
+  .sidebar {
+    position: static;
+    width: 80px;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem 0;
+    border-top: none;
+    border-right: 1px solid var(--secondary-light-color);
+  }
+
+  .nav-menu {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .hidden-mobile { display: flex; } /* Réaffichage des éléments masqués sur mobile */
+
+  .logo-icon {
+    width: 40px; height: 40px;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+
+  .main-content {
+    padding: 2rem;
+  }
+
+  /* Header Desktop */
   .top-header h1 { font-size: 1.8rem; }
   
-  /* Grille à 2 colonnes confirmée */
-  .dashboard-grid { grid-template-columns: 2.5fr 1fr; gap: 2rem; }
+  /* Grille Principale Desktop (2 colonnes) */
+  .dashboard-grid {
+    grid-template-columns: 2.5fr 1fr;
+    gap: 2rem;
+  }
+
+  /* Cartes d'événements Desktop (4 colonnes) */
   .events-row { grid-template-columns: repeat(4, 1fr); }
-  .icon-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--my-white); display: flex; align-items: center; justify-content: center; }
-  .icon-btn svg { width: 24px; height: 24px; }
+
+  .icon-btn {
+    background: none; border: none; font-size: 1.2rem; cursor: pointer;
+  }
 }
 </style>
