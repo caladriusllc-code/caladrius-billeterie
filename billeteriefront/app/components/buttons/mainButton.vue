@@ -34,6 +34,18 @@ export default {
 </script>
 
 <style scoped>
+button{
+    cursor: pointer;
+    border: none;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 999px;
+}
 
 .main-button{
     background-color: var(--primary-color);
@@ -42,7 +54,7 @@ export default {
 }
 
 .main-button:hover{
-    background-color: #f8ff23;
+    background-color: var(--primary-color-dark);
     color: var(--background-color);
     transition: all 0.3s ease-in-out;
 }

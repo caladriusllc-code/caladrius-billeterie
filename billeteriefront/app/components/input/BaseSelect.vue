@@ -117,25 +117,18 @@ export default {
 
 <style scoped>
 /* Variables identiques à BaseInput */
-.input-group {
-  --primary-color: #3b82f6;
-  --error-color: #ef4444;
-  --text-color: #1f2937;
-  --label-color: #374151;
-  --border-color: #d1d5db;
-  --focus-ring: rgba(59, 130, 246, 0.25);
-  --bg-disabled: #f3f4f6;
-  
+.input-group {  
   display: flex;
   flex-direction: column;
   margin-bottom: 0.5rem;
   font-family: sans-serif;
+  width: 100%;
 }
 
 .input-label {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--label-color);
+  color: var(--primary-color);
   margin-bottom: 0.4rem;
   display: block;
 }
@@ -156,8 +149,8 @@ export default {
   padding: 0.625rem 0.75rem;
   font-size: 0.9rem;
   line-height: 1.5;
-  color: var(--text-color);
-  background-color: #fff;
+  color: var(--my-white);
+  background-color: var(--tertiary-color);
   border: 1px solid var(--border-color);
   border-radius: 1.5rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;

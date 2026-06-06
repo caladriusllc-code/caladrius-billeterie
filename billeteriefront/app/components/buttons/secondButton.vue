@@ -32,14 +32,14 @@ export default {
 <style scoped>
 
 .second-button{
-    background-color: var(--secondary-light-color);
-    color: var(--secondary-color);
+    background-color: var(--secondary-color);
+    color: var(--background-color);
     transition: all 0.2s ease-in-out;
-    border-radius: 1rem;
+    border-radius: 0.6rem;
 }
 
 .second-button:hover{
-    background-color: #f8ff23;
+    background-color: var(--secondary-color);
     color: var(--background-color);
     transition: all 0.3s ease-in-out;
 }

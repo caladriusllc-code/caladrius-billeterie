@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans+SemiExpanded:ital,wght@0,200..900;1,200..900&display=swap');
 @import '../css/wrapper.css';
 @import '../css/form.css';
 @import "tailwindcss";
@@ -6,14 +6,15 @@
 
 :root{
 
-    --primary-color: #F2F864;
-    --secondary-color: #EFF662;
+    --primary-color: #ffac13;
+    --primary-color-dark: #eca012;
+    --secondary-color: #ecc237;
     --secondary-light-color:#32f459;
     --secondary-dark-color:#1f7b31;
     --tertiary-color:#222222;
     --background-color: #181818;
     --my-white: #fff;
-    --secondary-light-color: #515151;
+    --secondary-light-color: #a1a1a1;
     --background-green-color: #3b8d50;
     --error-color: rgb(255, 86, 86);
 
@@ -21,7 +22,7 @@
     --glass-bg: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.2);
     /* About my different fonts */
-    --font-primary: 'Inter+Tight', sans-serif;
+    --font-primary: "Zalando Sans SemiExpanded", sans-serif;
     --font-secondary: 'Instrument+Sans', sans-serif;
 
     /* Font size */
@@ -33,18 +34,5 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Zalando Sans", sans-serif;
-}
-
-button{
-    cursor: pointer;
-    border: none;
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    padding: 1rem;
-    border-radius: 999px;
+    font-family: var(--font-primary);
 }

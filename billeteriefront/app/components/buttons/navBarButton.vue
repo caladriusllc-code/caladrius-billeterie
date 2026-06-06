@@ -21,6 +21,7 @@ export default {
   background: var(--secondary-color);
   color: var(--background-color);
   display:none;
+  padding: 0.75rem 1.5rem;
 }
 
 @media (min-width: 768px) {

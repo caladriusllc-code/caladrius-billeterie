@@ -1,26 +1,20 @@
 <template>
     <div class="main-wrapper">
-        <div class="content-container">
             
-            <div class="description">
-                <h1>{{ title }}</h1>
-                <!-- 
-                    <p class="subtitle">{{ description }}</p>
-                    <div class="meta-info">
-                        <span class="date">{{ date }}</span>
-                        <span class="separator" v-if="date && location">|</span>
-                        <span class="location">{{ location }}</span>
-                    </div>
-                -->
-                <mainButton label="S'inscrire" @click="()=>{router.push('auth/registration')}"/>
-            </div>
-
+        <div class="description w-full">
+            <h1>{{ title }}</h1> 
+            <p class="subtitle">{{ description }}</p>
+            <mainButton label="Derniers évènements" @click="()=>{router.push('auth/registration')}"/>
         </div>
+
+        <lookingEventForm/>
+
     </div>
 </template>
 
 <script>
 import mainButton from '../buttons/mainButton.vue'
+import lookingEventForm from '../forms/lookingEventForm.vue'
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 export default {
@@ -28,23 +22,16 @@ export default {
     props: {
         title: {
             type: String,
-            default: 'Gérer vos événements n\'a jamais été aussi simple !'
+            default: 'Alors quel évènement souhaitez-vous découvrir aujourd\'hui?'
         },
         description: {
             type: String,
-            default: 'Heureux de te revoir parmi nous.'
+            default: 'Consulter tous nos derniers évènements et réservez vos billets en quelques clics seulement !'
         },
-        date: {
-            type: String,
-            default: '10 octobre 2023'
-        },
-        location: {
-            type: String,
-            default: 'Paris, France'
-        }
     },
     components: {
-        mainButton
+        mainButton,
+        lookingEventForm
     },
     setup(){
         const router = useRouter();
@@ -63,6 +50,7 @@ export default {
     
     /* Force l'image à prendre toute la hauteur de l'écran */
     min-height: 100vh;
+    width: 100%;
     
     /* Dégradé noir semi-transparent superposé à l'image */
     background-image: linear-gradient(
@@ -76,7 +64,12 @@ export default {
     background-position: center;
     background-repeat: no-repeat;
     background-color: #000000;
-    padding: 2rem;
+    padding: 6rem 0.5rem 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+    gap: 2rem;
 }
 
 .content-container {
@@ -87,22 +80,19 @@ export default {
 
 .description {
     /* Ancrage en bas à gauche */
-    position: absolute;
-    bottom: 3rem; /* Espace depuis le bas de l'écran */
-    left: 3rem;   /* Espace depuis la gauche de l'écran */
     color: #ffffff;
     text-align: left; /* Aligne le texte à gauche */
-    width: 80%;
+    width: 100%;
     max-width: 600px; /* Évite que le texte s'étale trop sur les grands écrans */
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
 .description h1 {
     color: var(--primary-color);
-    font-size: 3.5rem;
-    font-weight: 700;
+    font-size: 2.75rem;
+    font-weight: 600;
     margin: 0 0 0.5rem 0;
     line-height: 1.2;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
@@ -127,9 +117,11 @@ export default {
 }
 
 /* Responsive pour les tablettes et smartphones */
-@media (max-width: 768px) {
+@media (min-width: 768px) {
     .main-wrapper {
         padding: 1.5rem;
+        display: grid;
+        grid-template-columns: 1fr;
     }
 
     .description {
@@ -144,6 +136,29 @@ export default {
 
     .subtitle {
         font-size: 1.1rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .main-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 3rem;
+    }
+
+    .description {
+        bottom: 3rem;
+        left: 3rem;
+        right: auto; /* Permet au texte de s'étendre sur la gauche sur les grands écrans */
+    }
+
+    .description h1 {
+        font-size: 3rem;
+    }
+
+    .subtitle {
+        font-size: 1.25rem;
     }
 }
 </style>
