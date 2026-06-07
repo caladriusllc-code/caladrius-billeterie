@@ -5,8 +5,8 @@
         </div>
 
         <div class="header-actions">
-            <BaseResearchInput/>
-            <addButton/>
+          <BaseResearchInput/>
+          <addButton/>
         </div>
     </header>
 </template>
@@ -49,36 +49,5 @@ export default {
 .header-actions {
   display: flex;
   gap: 0.5rem;
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  background-color: var(--tertiary-color);
-  border: 1px solid var(--secondary-light-color);
-  border-radius: 8px;
-  padding: 0.5rem;
-  flex: 1;
-  min-width: 200px;
-}
-
-.search-bar input {
-  background: none;
-  border: none;
-  color: var(--my-white);
-  outline: none;
-  margin-left: 0.5rem;
-  width: 100%;
-}
-
-.btn-primary {
-  background-color: var(--primary-color);
-  color: var(--background-color);
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  flex-shrink: 0;
 }
 </style>

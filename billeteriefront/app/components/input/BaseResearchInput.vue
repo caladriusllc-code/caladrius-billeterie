@@ -1,253 +1,274 @@
 <template>
-    <div 
-        class="search-container" 
-        :class="{ 'is-expanded': isExpanded || !isMobile, 'is-mobile': isMobile }"
-        v-click-outside="closeSearch"
-    >
-        <button 
-            v-if="isMobile && !isExpanded" 
-            class="search-trigger" 
-            @click.stop="expandSearch"
-            aria-label="Ouvrir la recherche"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="search-icon">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.604 10.604z" />
-            </svg>
-        </button>
+  <div class="research-wrapper">
+    
+    <Teleport to="body">
+      <transition name="fade">
+        <div v-if="isActive" class="glass-overlay" @click="toggleSearch"></div>
+      </transition>
+    </Teleport>
 
-        <div class="search-input-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="search-icon internal-icon">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.604 10.604z" />
-            </svg>
-            
-            <input
-            ref="inputRef"
-            type="search"
-            class="search-input"
-            :value="modelValue"
-            @input="handleInput"
-            :placeholder="placeholder"
-            @focus="$emit('focus')"
-            @blur="handleBlur"
-            />
+    <div class="btn-wrapper" :class="{ 'is-elevated': isActive }">
+      <button class="research-btn" @click="toggleSearch" aria-label="Ouvrir la recherche">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+        </svg>
+      </button>
 
-            <button v-if="modelValue" class="clear-button" @click="clearSearch" aria-label="Effacer">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="clear-icon">
-                    <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-                </svg>
-            </button>
+      <transition name="slide-fade">
+        <div v-show="isActive || isDesktop" class="input-container" :class="{ active: isActive }">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="desktop-search-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+
+          <input 
+            ref="searchInput"
+            type="text" 
+            v-model="research" 
+            placeholder="Rechercher un événement..." 
+            class="research-input"
+            @keyup.esc="toggleSearch"
+          >
+
+          <button v-if="research.length > 0" class="clear-btn" @click="clearSearch" aria-label="Effacer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
+      </transition>
     </div>
+  </div>
 </template>
 
-<script>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+<script lang="ts">
+import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
 
 export default {
-  name: 'SearchInput',
-  props: {
-    modelValue: {
-      type: String,
-      default: ''
-    },
-    placeholder: {
-      type: String,
-      default: 'Rechercher...'
-    }
-  },
-  emits: ['update:modelValue', 'focus', 'blur'],
-  
-  // Directive personnalisée locale pour fermer la recherche si on clique ailleurs
-  directives: {
-    clickOutside: {
-      mounted(el, binding) {
-        el.clickOutsideEvent = (event) => {
-          if (!(el === event.target || el.contains(event.target))) {
-            binding.value();
-          }
-        };
-        document.addEventListener('click', el.clickOutsideEvent);
-      },
-      unmounted(el) {
-        document.removeEventListener('click', el.clickOutsideEvent);
-      }
-    }
-  },
+  emits: ['input:research'],
 
   setup(props, { emit }) {
-  const isExpanded = ref(false);
-  const inputRef = ref(null);
+    const research = ref<string>("")
+    const isActive = ref<boolean>(false)
+    const searchInput = ref<HTMLInputElement | null>(null)
+    const isDesktop = ref<boolean>(false)
 
-  // CORRECTION : On détecte tout de suite au lieu de mettre 'false' par défaut
-  const isMobile = ref(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+    // Émettre la valeur à chaque frappe
+    watch(research, (newVal) => {
+      emit('input:research', newVal)
+    })
 
-  const checkBreakpoint = () => {
-    isMobile.value = window.innerWidth < 768;
-    // Si on repasse sur écran large, on réinitialise l'état étendu
-    if (!isMobile.value) isExpanded.value = false;
-  };
-
-  onMounted(() => {
-    // Double vérification par sécurité au montage
-    checkBreakpoint();
-    window.addEventListener('resize', checkBreakpoint);
-  });
-
-  onUnmounted(() => {
-    window.removeEventListener('resize', checkBreakpoint);
-  });
-
-  const expandSearch = async () => {
-    isExpanded.value = true;
-    await nextTick();
-    inputRef.value?.focus();
-  };
-
-  const closeSearch = () => {
-    if (!props.modelValue) {
-      isExpanded.value = false;
+    // Gérer le redimensionnement pour forcer l'affichage sur desktop
+    const checkWidth = () => {
+      isDesktop.value = window.innerWidth >= 768
+      if (isDesktop.value) isActive.value = false // Reset l'état mobile
     }
-  };
 
-  const handleInput = (event) => {
-    emit('update:modelValue', event.target.value);
-  };
+    onMounted(() => {
+      checkWidth()
+      window.addEventListener('resize', checkWidth)
+    })
 
-  const clearSearch = () => {
-    emit('update:modelValue', '');
-    inputRef.value?.focus();
-  };
+    onUnmounted(() => {
+      window.removeEventListener('resize', checkWidth)
+    })
 
-  return {
-    isExpanded,
-    isMobile,
-    inputRef,
-    expandSearch,
-    closeSearch,
-    handleInput,
-    clearSearch
-  };
+    // L'Auto-focus UX
+    const toggleSearch = async () => {
+      isActive.value = !isActive.value
+      if (isActive.value) {
+        await nextTick() // On attend que le champ soit dans le DOM
+        searchInput.value?.focus() // On ouvre le clavier du mobile directement !
+      }
+    }
+
+    // Fonction pour la croix "Clear"
+    const clearSearch = () => {
+      research.value = ""
+      searchInput.value?.focus() // On remet le focus après avoir effacé
+    }
+
+    return {
+      research,
+      isActive,
+      searchInput,
+      isDesktop,
+      toggleSearch,
+      clearSearch
+    }
   }
 }
 </script>
 
 <style scoped>
-.search-container {
+/* =========================================
+   COMPOSANT DE BASE
+   ========================================= */
+.btn-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  font-family: sans-serif;
-  transition: all 0.3s ease;
-  width: auto;
 }
 
-/* Style de la loupe seule sur Mobile */
-.search-trigger {
-  background-color: transparent; /* Sécurité : force le fond transparent */
-  border: 1px solid #ffac13;
-  border-radius: 999px;
-  width: 2.8rem;
-  height: 2.8rem;
+.btn-wrapper.is-elevated {
+  z-index: 9999;
+}
+
+/* Bouton Mobile */
+.research-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: var(--primary-color);
+  color: black;
+  border: none;
+  border-radius: 8px; /* Plus doux */
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.research-btn:active {
+  transform: scale(0.95); /* Micro-interaction au clic */
+}
+
+.size-6 {
+  width: 24px;
+  height: 24px;
+}
+
+/* =========================================
+   CHAMP DE RECHERCHE MOBILE
+   ========================================= */
+.input-container {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  width: 280px;
+  display: flex;
+  align-items: center;
+}
+
+.research-input {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem; /* Espace à droite pour la croix */
+  border: 1px solid var(--primary-color);
+  background-color: var(--tertiary-color, #ffffff); /* Fallback blanc important sur mobile pour contraster avec le fond noir flouté */
+  color: var(--primary-color, #1a1a1a);
+  border-radius: 12px; /* Coins plus modernes */
+  font-size: 1rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); /* Effet d'élévation sur le glassmorphism */
+  transition: all 0.3s ease;
+}
+
+.research-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(255, 172, 19, 0.2), 0 10px 25px -5px rgba(0, 0, 0, 0.3); /* Halo glowy */
+}
+
+.desktop-search-icon {
+  display: none; /* Caché sur mobile */
+}
+
+/* Croix d'effacement */
+.clear-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.clear-btn:hover {
+  color: var(--primary-color);
+}
+
+.clear-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* =========================================
+   ANIMATIONS (VUE TRANSITIONS)
+   ========================================= */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.slide-fade-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.slide-fade-enter-from, .slide-fade-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
+/* =========================================
+   GLASSMORPHISM
+   ========================================= */
+:global(.glass-overlay) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 9998;
   cursor: pointer;
-  color: #ffac13;
-  transition: background-color 0.2s;
 }
 
-/* Hover amélioré : un fond légèrement orangé au lieu du gris */
-.search-trigger:hover {
-  background-color: rgba(255, 172, 19, 0.1); 
-}
-
-/* On force la couleur orange spécifiquement pour la loupe du bouton */
-.search-trigger .search-icon {
-  color: #ffac13;
-}
-
-.search-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-/* Wrapper du champ de saisie */
-.search-input-wrapper {
-  position: relative;
-  display: none; /* Caché par défaut sur mobile */
-  align-items: center;
-  width: 100%;
-}
-
-.internal-icon {
-  position: absolute;
-  left: 1rem;
-  color: #ffac13;
-  pointer-events: none;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.7rem 2.5rem 0.7rem 2.7rem;
-  font-size: 1rem;
-  border: 1px solid #ffac13;
-  border-radius: 1.5rem; /* Reprise du style arrondi du BaseInput */
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.search-input:focus {
-  border-color: #ffac13;
-  box-shadow: 0 0 0 3px rgba(255, 172, 19, 0.25);
-}
-
-.clear-button {
-  position: absolute;
-  right: 0.8rem;
-  background: none;
-  border: none;
-  color: #9ca3af;
-  cursor: pointer;
-  padding: 2px;
-  display: flex;
-}
-
-.clear-icon {
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-/* --- LOGIQUE RESPONSIVE (MOBILE EXPANDED & TABLETTE+) --- */
-
-/* Quand la loupe est cliquée sur mobile */
-.search-container.is-mobile.is-expanded {
-  width: 100%;
-}
-
-.search-container.is-mobile.is-expanded .search-input-wrapper {
-  display: flex;
-  animation: fadeIn 0.2s ease-out;
-}
-
-/* Rendu naturel sur Tablette et Desktop (>= 768px) */
+/* =========================================
+   TABLETTE ET DESKTOP (>= 768px)
+   ========================================= */
 @media (min-width: 768px) {
-  .search-container {
-    width: 100%;
-    max-width: 400px; /* S'affiche proprement dans une barre d'outils */
+  
+  :global(.glass-overlay) {
+    display: none !important;
   }
 
-  .search-trigger {
-    display: none; /* Plus besoin du bouton déclencheur */
+  .research-btn {
+    display: none;
   }
 
-  .search-input-wrapper {
-    display: flex; /* Toujours visible */
+  .input-container {
+    position: static; /* Annule l'absolu du mobile */
+    width: 300px;
   }
-}
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  .research-input {
+    padding: 0.7rem 2.5rem 0.7rem 2.5rem; /* Padding GAUCHE pour l'icone, DROITE pour la croix */
+    border-radius: 999px; /* Ton design en "Pill" */
+    background-color: var(--tertiary-color);
+    box-shadow: none; /* Pas d'ombre portée sur desktop sauf au focus */
+  }
+
+  .research-input:focus {
+    box-shadow: 0 0 0 2px rgba(255, 172, 19, 0.2);
+  }
+
+  /* Affichage de la petite loupe dans le champ */
+  .desktop-search-icon {
+    display: block;
+    position: absolute;
+    left: 14px;
+    width: 20px;
+    height: 20px;
+    color: var(--primary-color);
+    pointer-events: none; /* Pour ne pas bloquer le clic sur l'input */
+  }
 }
 </style>
