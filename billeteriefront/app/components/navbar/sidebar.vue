@@ -75,14 +75,21 @@
   </aside>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import { ref } from 'vue';
 
-const isReduced = ref(false);
+export default {
+  name: 'Sidebar',
+  setup() {
+    const isReduced = ref(false);
 
-const toggleReduce = () => {
-  isReduced.value = !isReduced.value;
-};
+    const toggleReduce = () => {
+      isReduced.value = !isReduced.value;
+    };
+
+    return { isReduced, toggleReduce };
+  }
+}
 </script>
 
 <style scoped>

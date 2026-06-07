@@ -1,247 +1,211 @@
 <template>
-  <div class="create-module" :class="{ 'is-open': isOpen }">
+  <div class="add-button-wrapper">
     
+    <button 
+      class="add-button" 
+      :class="{ 'is-active': isOpen }" 
+      @click="toggleDropdown"
+      aria-label="Ajouter un nouvel élément"
+    >
+      <span class="btn-text">Nouveau</span>
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        fill="none" 
+        viewBox="0 0 24 24" 
+        stroke-width="2" 
+        stroke="currentColor" 
+        class="plus-icon"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+    </button>
+
     <Teleport to="body">
-      <div v-if="isOpen" class="click-outside-overlay" @click="toggleMenu"></div>
+      <div v-if="isOpen" class="click-outside-overlay" @click="closeDropdown"></div>
     </Teleport>
 
-    <transition name="menu-anim">
-      <div v-if="isOpen" class="menu-options">
-        <button 
-          v-for="action in creationActions" 
-          :key="action.id"
-          class="option-box"
-          @click="handleAction(action.id)"
-        >
-          <div class="icon-wrapper">
-            <component :is="action.icon" class="action-icon" />
-          </div>
-          <span class="option-label">{{ action.label }}</span>
-        </button>
+    <transition name="dropdown-anim">
+      <div v-if="isOpen" class="drop-down">
+        <ul class="dropdown-list">
+          <li class="dropdown-item" @click="handleAction('Evenement')">
+            <svg class="item-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+            </svg>
+            Événement
+          </li>
+          <li class="dropdown-item" @click="handleAction('Billet')">
+            <svg class="item-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
+            </svg>
+            Billet
+          </li>
+          <li class="dropdown-item" @click="handleAction('Utilisateur')">
+            <svg class="item-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+            </svg>
+            Utilisateur
+          </li>
+        </ul>
       </div>
     </transition>
-
-    <button 
-      class="action-button" 
-      @click="toggleMenu"
-      :aria-expanded="isOpen"
-      aria-label="Menu de création"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-      </svg>
-      <span class="label">Créer</span>
-    </button>
+    
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, defineComponent, h } from 'vue'
+<script setup>
+import { ref } from 'vue'
 
-const emit = defineEmits(['create'])
 const isOpen = ref(false)
 
-const toggleMenu = () => {
+const toggleDropdown = () => {
   isOpen.value = !isOpen.value
 }
 
-const handleAction = (actionId: string) => {
-  emit('create', actionId)
+const closeDropdown = () => {
   isOpen.value = false
 }
 
-const IconEvent = defineComponent({
-  render: () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', strokeWidth: '1.5', stroke: 'currentColor' }, [
-    h('path', { strokeLinecap: 'round', strokeLinejoin: 'round', d: 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z' })
-  ])
-})
-
-const IconTicket = defineComponent({
-  render: () => h('svg', { xmlns: 'http://www.w3.org/2000/svg', fill: 'none', viewBox: '0 0 24 24', strokeWidth: '1.5', stroke: 'currentColor' }, [
-    h('path', { strokeLinecap: 'round', strokeLinejoin: 'round', d: 'M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z' })
-  ])
-})
-
-const creationActions = [
-  { id: 'event', label: 'Événement', icon: IconEvent },
-  { id: 'ticket', label: 'Billet', icon: IconTicket }
-]
+const handleAction = (type) => {
+  console.log(`Création d'un nouveau : ${type}`)
+  // Ici tu pourras émettre un événement vers ton parent : emit('create', type)
+  closeDropdown()
+}
 </script>
 
 <style scoped>
-/* ===========================================================
-   0. OVERLAY & WRAPPER
-   =========================================================== */
+/* Variables globales (à titre indicatif si tu ne les as pas déjà) */
+.add-button-wrapper {
+  --primary-color: #ffac13;
+  --background-color: #1a1a1a;
+  --text-color: #ffffff;
+  
+  position: relative;
+  display: inline-block;
+}
+
+/* =========================================
+   1. LE BOUTON
+   ========================================= */
+.add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  
+  background: var(--primary-color);
+  color: #000000; /* Toujours noir sur l'orange pour un contraste optimal */
+  
+  border: none;
+  border-radius: 999px; /* Forme pilule parfaite */
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  cursor: pointer;
+  
+  /* Ombre subtile avec la couleur primaire */
+  box-shadow: 0 4px 12px rgba(255, 172, 19, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 172, 19, 0.4);
+}
+
+.add-button:active {
+  transform: translateY(0);
+}
+
+/* L'icône qui tourne */
+.plus-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.add-button.is-active .plus-icon {
+  transform: rotate(135deg); /* Transforme le "+" en "x" */
+}
+
+/* =========================================
+   2. LE MENU DÉROULANT
+   ========================================= */
+.drop-down {
+  position: absolute;
+  top: calc(100% + 10px); /* Juste en dessous du bouton */
+  right: 5px; /* Ou 'right: 0' si tu veux l'aligner à droite */
+  min-width: 200px;
+  
+  background: var(--background-color);
+  border: 1px solid #333; /* Bordure discrète */
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 100;
+}
+
+.dropdown-list {
+  list-style: none;
+  padding: 0.5rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 1rem;
+  
+  color: #e5e7eb;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #2a2a2a;
+  color: var(--primary-color);
+  transform: translateX(4px); /* Petit effet de glissement vers la droite */
+}
+
+.item-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.8;
+}
+
+.dropdown-item:hover .item-icon {
+  opacity: 1;
+}
+
+/* =========================================
+   3. ANIMATIONS & OVERLAY
+   ========================================= */
+/* Animation d'apparition du menu */
+.dropdown-anim-enter-active,
+.dropdown-anim-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-anim-enter-from,
+.dropdown-anim-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+
+/* Overlay invisible pour capturer le clic extérieur */
 :global(.click-outside-overlay) {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 9998;
-}
-
-.create-module {
-  position: fixed;
-  bottom: 68px;
-  right: 24px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  border-radius: 999px;
-}
-
-/* ===========================================================
-   1. LE MENU DES OPTIONS
-   =========================================================== */
-.menu-options {
-  position: absolute;
-  bottom: calc(100% + 16px);
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 180px;
-}
-
-.option-box {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 10px 16px;
-  background-color: #1a1a1a;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  color: #e5e7eb;
-  cursor: pointer;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-  transition: all 0.2s ease;
-}
-
-.option-box:hover {
-  background-color: #2a2a2a;
-  border-color: var(--primary-color, #ffac13);
-  transform: translateX(-4px);
-}
-
-.icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  color: var(--primary-color, #ffac13);
-}
-
-.action-icon {
-  width: 40px;
-  height: 40px;
-}
-
-.option-label {
-  font-size: 0.95rem;
-  font-weight: 500;
-}
-
-/* ===========================================================
-   2. BOUTON PRINCIPAL
-   =========================================================== */
-.action-button {
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background-color: var(--primary-color);
-  color: #000000;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.plus-icon {
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ✅ FIX : taille de l'icône protégée explicitement sur mobile */
-@media (max-width: 767px) {
-  .plus-icon {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-.create-module.is-open .plus-icon {
-  transform: rotate(135deg);
-}
-
-.label {
-  display: none;
-}
-
-/* ===========================================================
-   3. ANIMATIONS VUE
-   =========================================================== */
-.menu-anim-enter-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.menu-anim-leave-active {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.menu-anim-enter-from,
-.menu-anim-leave-to {
-  opacity: 0;
-  transform: translateY(20px) scale(0.95);
-}
-
-/* ===========================================================
-   4. TABLETTE & DESKTOP (>= 768px)
-   =========================================================== */
-@media (min-width: 768px) {
-  .create-module {
-    position: relative;
-    bottom: auto;
-    right: auto;
-    align-items: center;
-  }
-
-  .action-button {
-    width: auto;
-    height: auto;
-    padding: 0.75rem 1.5rem;
-    border-radius: 999px;
-    flex-direction: row;
-    gap: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-
-  .label {
-    display: block;
-    font-weight: 500;
-    color: #000000;
-  }
-
-  .plus-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .menu-options {
-    bottom: auto;
-    top: calc(100% + 12px);
-    right: 0;
-  }
-
-  .menu-anim-enter-from,
-  .menu-anim-leave-to {
-    transform: translateY(-10px) scale(0.95);
-  }
+  z-index: 99; /* Juste en dessous du z-index 100 du dropdown */
 }
 </style>
