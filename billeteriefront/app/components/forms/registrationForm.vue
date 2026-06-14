@@ -110,7 +110,7 @@ import divider from '../tools/divider.vue';
 import stepper from '../tools/stepper.vue';
 import BaseChoices from '../input/BaseChoices.vue';
 
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/authStore';
 import type { User } from '../../stores/authStore';
@@ -251,6 +251,10 @@ export default {
                 console.log('[Register] Erreur capturée', error)
             }
         }
+
+        onMounted(()=>{
+            
+        })
 
         return {
             router,

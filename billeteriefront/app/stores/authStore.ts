@@ -104,7 +104,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (err: any) {
       console.error('[AuthStore] login() → erreur :', err)
       // Gestion si le backend renvoie une erreur au format { error: "..." }
-      error.value = err.data?.error || err.message || "Une erreur est survenue"
+      error.value = "Problème de connexion"
       throw err
     } finally {
       isLoading.value = false
