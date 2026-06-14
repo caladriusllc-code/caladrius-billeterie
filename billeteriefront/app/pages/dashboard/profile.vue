@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import navHead from '../../components/header/navHead.vue';
 import sidebar from '../../components/navbar/sidebar.vue';
-import statCardSection from '~/components/sections/statCardSection.vue';
+import statCardSection from '../../components/sections/statCardSection.vue';
 </script>
 
 <style scoped>
@@ -60,7 +60,8 @@ import statCardSection from '~/components/sections/statCardSection.vue';
   padding: 1rem;
   overflow-y: auto; /* Autorise UNIQUEMENT le scroll vertical ici */
   overflow-x: hidden; /* Sécurité : empêche le scroll horizontal indésirable au niveau global */
-  padding-bottom: calc(80px + env(safe-area-inset-bottom)); 
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  width: 100%; 
 }
 
 /* Dashboard Grid */
@@ -69,6 +70,7 @@ import statCardSection from '~/components/sections/statCardSection.vue';
   grid-template-columns: 1fr;
   gap: 1.5rem;
   min-width: 0; /* 👈 FIX CRUCIAL : Empêche la grille de déborder de l'écran */
+  width: 100%;
 }
 
 .left-column, .right-column {
@@ -103,6 +105,10 @@ import statCardSection from '~/components/sections/statCardSection.vue';
   justify-content: center;
 }
 
+.events-section{
+  width: 100%;
+}
+
 /* =========================================
  2. STYLES DESKTOP (>= 1024px)
  ========================================= */
@@ -118,7 +124,7 @@ import statCardSection from '~/components/sections/statCardSection.vue';
 
   /* Grille Principale Desktop (2 colonnes) */
   .dashboard-grid {
-    grid-template-columns: 2.5fr 1fr;
+    grid-template-columns: 1fr;
     gap: 2rem;
   }
 }

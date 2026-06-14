@@ -49,6 +49,7 @@ export default {
   flex-direction: column;
   gap: 1rem; /* Espace entre le titre et la zone de scroll */
   min-width: 0; /* Protège le layout parent contre le débordement */
+  width: 100%;
 }
 
 .section-header h3 {
