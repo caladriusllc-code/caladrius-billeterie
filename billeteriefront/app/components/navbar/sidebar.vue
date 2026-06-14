@@ -208,6 +208,14 @@ export default {
     padding-left: 0;
   }
 
+  .logo svg{
+    color:var(--primary-color)
+  }
+
+  .logo:hover svg {
+    background: var(--secondary-light-color);
+  }
+
   .logo-icon {
     width: 50px; 
     height: 50px;
