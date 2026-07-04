@@ -49,9 +49,9 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import AddEventForm from '@/components/forms/addEventForm.vue';
-import TicketPreview from '@/components/sections/ticketPreviewSection.vue'; // Assure-toi que le chemin est correct
-import { useEventStore } from '@/stores/eventStore';
+import AddEventForm from '../../components/forms/addEventForm.vue'
+import TicketPreview from '../../components/sections/ticketPreviewSection.vue'; // Assure-toi que le chemin est correct
+import { useEventStore } from '../../stores/eventStore';
 
 export default defineComponent({
   name: 'AddEventPage',
@@ -80,8 +80,47 @@ export default defineComponent({
     });
 
     const handleCreate = async () => {
-      console.log("Création en cours avec :", eventData.value);
-      // Logique d'envoi API ici
+      // 1. Validation de base
+      if (!eventData.value.name) {
+        alert("Veuillez entrer un nom d'événement.");
+        return;
+      }
+
+      // 2. Formatage des dates
+      const startISO = new Date(`${eventData.value.startDate}T${eventData.value.startTime}`).toISOString();
+      const endISO = new Date(`${eventData.value.endDate}T${eventData.value.endTime}`).toISOString();
+
+      // 3. ⚠️ CONSTRUCTION DU PAYLOAD (SANS LES TICKETS)
+      // On extrait uniquement ce que ton modèle EventModel actuel côté Django peut comprendre
+      const payload = {
+        title: eventData.value.name,
+        description: eventData.value.description || 'Aucune description',
+        category: eventData.value.nature,
+        venue_name: eventData.value.location || 'À définir',
+        address: eventData.value.location || 'Abidjan',
+        city: 'Abidjan',
+        country: 'Côte d\'Ivoire',
+        capacity: Number(eventData.value.capacity),
+        start_date: startISO,
+        end_date: endISO,
+        sales_start_date: startISO,
+        sales_end_date: endISO,
+        organizer: '1', 
+        // ❌ On ne met surtout pas "tickets: eventData.value.tickets" ici
+      };
+
+      try {
+        // 4. Appel réseau sécurisé
+        await eventStore.createEvent(payload);
+        
+        // (Optionnel) Si tu veux quand même simuler les tickets sur la page suivante sans backend,
+        // tu pourrais utiliser le localStorage ici :
+        // localStorage.setItem('temp_tickets', JSON.stringify(eventData.value.tickets));
+
+        router.push('/dashboard/profile'); 
+      } catch (error) {
+        alert(eventStore.error || "Erreur lors de la création.");
+      }
     };
 
     return {

@@ -15,12 +15,19 @@
 import BaseResearchInput from '../input/BaseResearchInput.vue'
 import mainButton from '../buttons/mainButton.vue'
 import addButton from '../buttons/addButton.vue'
+import { useRouter } from 'vue-router';
 export default {
     components:{
         BaseResearchInput,
         mainButton,
         addButton
+    },
+    setup() {
+        const router = useRouter();
+
+        return {router};
     }
+
 }
 </script>
 

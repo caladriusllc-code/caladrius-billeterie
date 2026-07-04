@@ -1,13 +1,17 @@
 <template>
   <div class="dashboard-container">
     
-    <sidebar />
+    <!-- La sidebar est connectée à la variable et met à jour l'état quand on clique -->
+    <sidebar 
+      :activeView="currentView" 
+      @change-view="currentView = $event" 
+    />
 
     <main class="main-content">
         <navHead />
 
-        <div class="dashboard-grid">
-        
+        <!-- VUE : ACCUEIL DU DASHBOARD -->
+        <div v-if="currentView === 'home'" class="dashboard-grid fade-in">
           <div class="left-column">
               
             <statCardSection/>
@@ -17,26 +21,53 @@
                 <h2>Ongoing Event</h2>
                 <button class="more-options">•••</button>
               </div>
-              </section>
+            </section>
 
             <section class="events-section">
               <div class="section-header">
                   <h2>Upcoming Event</h2>
                   <button class="more-options">•••</button>
               </div>
-              </section>
+            </section>
 
           </div>
-
         </div>
+
+        <!-- VUE : GESTION DES ÉVÉNEMENTS -->
+        <div v-else-if="currentView === 'events'" class="events-view fade-in">
+          <ManageEvents />
+        </div>
+
     </main>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
 import navHead from '../../components/header/navHead.vue';
 import sidebar from '../../components/navbar/sidebar.vue';
 import statCardSection from '../../components/sections/statCardSection.vue';
+
+// ⚠️ Ajuste le chemin selon l'endroit où tu as sauvegardé ManageEvents.vue 
+import ManageEvents from '../../components/sections/manageEvents.vue';
+
+export default defineComponent({
+  name: 'ProfileDashboard',
+  components: {
+    navHead,
+    sidebar,
+    statCardSection,
+    ManageEvents
+  },
+  setup() {
+    // État local qui détermine quelle page est affichée
+    const currentView = ref('home');
+
+    return {
+      currentView
+    };
+  }
+});
 </script>
 
 <style scoped>
@@ -51,17 +82,26 @@ import statCardSection from '../../components/sections/statCardSection.vue';
   background-color: var(--background-color);
   color: var(--my-white);
   font-family: 'Inter', system-ui, sans-serif;
-  overflow: hidden; /* Empêche le body global de scroller */
+  overflow: hidden; 
 }
 
-/* Main Content */
 .main-content {
   flex: 1;
   padding: 1rem;
-  overflow-y: auto; /* Autorise UNIQUEMENT le scroll vertical ici */
-  overflow-x: hidden; /* Sécurité : empêche le scroll horizontal indésirable au niveau global */
+  overflow-y: auto; 
+  overflow-x: hidden; 
   padding-bottom: calc(80px + env(safe-area-inset-bottom));
   width: 100%; 
+}
+
+/* Animations de transition entre les vues */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Dashboard Grid */
@@ -69,18 +109,24 @@ import statCardSection from '../../components/sections/statCardSection.vue';
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-  min-width: 0; /* 👈 FIX CRUCIAL : Empêche la grille de déborder de l'écran */
+  min-width: 0; 
   width: 100%;
+}
+
+/* Conteneur pour la vue événements (annule les paddings internes doubles) */
+.events-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .left-column, .right-column {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  min-width: 0; /* 👈 FIX CRUCIAL : Autorise les composants enfants (comme les stats) à utiliser le scroll horizontal ! */
+  min-width: 0; 
 }
 
-/* Events Section & En-têtes (Seules choses restantes qui appartiennent vraiment au layout) */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -92,7 +138,6 @@ import statCardSection from '../../components/sections/statCardSection.vue';
   font-size: 1.1rem; 
 }
 
-/* Zones de clic optimisées (44x44px minimum) */
 .more-options { 
   background: none; 
   border: none; 
@@ -119,10 +164,9 @@ import statCardSection from '../../components/sections/statCardSection.vue';
 
   .main-content {
     padding: 2rem;
-    padding-bottom: 2rem; /* Réinitialisation car plus de navbar en bas */
+    padding-bottom: 2rem; 
   }
 
-  /* Grille Principale Desktop (2 colonnes) */
   .dashboard-grid {
     grid-template-columns: 1fr;
     gap: 2rem;

@@ -7,9 +7,6 @@
           <h1 class="page-title">Mes Événements</h1>
           <p class="page-subtitle">Gérez vos brouillons et événements en ligne</p>
         </div>
-        <button class="btn-primary add-btn" @click="router.push('/event/addEvent')">
-          + Nouvel événement
-        </button>
       </div>
     </header>
 
@@ -53,10 +50,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-// Importe le composant (Adapte le chemin selon ton dossier components)
-import EventManageCard from '@/components/cards/eventManageCards.vue';
+import EventManageCard from '../cards/eventManageCards.vue';
+import { useEventStore } from '../../stores/eventStore'; // 👈 Import de ton store
 
 export default defineComponent({
   name: 'ManageEvents',
@@ -65,25 +62,48 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const eventStore = useEventStore(); // 👈 Initialisation du store
     const activeTab = ref('DRAFT');
 
-    const myEvents = ref([
-      { id: 1, title: 'Le Grand Concert', date: '25 Déc 2026', status: 'DRAFT', capacity: 1000, bgGradient: 'linear-gradient(45deg, #1a2a6c, #b21f1f)', ticketsSold: 0 },
-      { id: 2, title: 'Festival des Grillades', date: '15 Sep 2026', status: 'PUBLISHED', capacity: 5000, bgGradient: 'linear-gradient(45deg, #ff416c, #ff4b2b)', ticketsSold: 1245 }
-    ]);
-
-    const draftCount = computed(() => myEvents.value.filter(e => e.status === 'DRAFT').length);
-    const publishedCount = computed(() => myEvents.value.filter(e => e.status === 'PUBLISHED').length);
-
-    const filteredEvents = computed(() => {
-      if (activeTab.value === 'ALL') return myEvents.value;
-      return myEvents.value.filter(e => e.status === activeTab.value);
+    // (Optionnel) Au chargement, on peut demander au store de récupérer les événements côté backend
+    onMounted(() => {
+      if (eventStore.fetchEvents) {
+        eventStore.fetchEvents();
+      }
     });
 
+    // 👈 MAGIE ICI : On lit dynamiquement les événements depuis Pinia
+    const myEvents = computed(() => {
+      return eventStore.events.map((ev: any) => ({
+        id: ev.id || Date.now() + Math.random(), // Fallback si pas d'ID backend
+        title: ev.title || 'Événement sans nom',
+        // Formatage de la date ISO reçue de addEventForm
+        date: ev.start_date 
+          ? new Date(ev.start_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) 
+          : 'Date à définir',
+        status: ev.status || 'DRAFT', // Par défaut, c'est un brouillon
+        capacity: ev.capacity || 0,
+        bgGradient: 'linear-gradient(45deg, #1a2a6c, #b21f1f)', // Dégradé par défaut
+        ticketsSold: ev.ticketsSold || 0
+      }));
+    });
+
+    // Les compteurs s'adaptent désormais automatiquement à Pinia
+    const draftCount = computed(() => myEvents.value.filter((e: any) => e.status === 'DRAFT').length);
+    const publishedCount = computed(() => myEvents.value.filter((e: any) => e.status === 'PUBLISHED').length);
+
+    // Filtrage pour les onglets
+    const filteredEvents = computed(() => {
+      if (activeTab.value === 'ALL') return myEvents.value;
+      return myEvents.value.filter((e: any) => e.status === activeTab.value);
+    });
+
+    // Action : Simuler la publication
     const publishEvent = (id: number) => {
-      const event = myEvents.value.find(e => e.id === id);
-      if (event && confirm(`Publier "${event.title}" ?`)) {
-        event.status = 'PUBLISHED';
+      // ⚠️ Ici, on modifie directement l'événement dans Pinia pour le prototype
+      const storeEvent = eventStore.events.find((e: any) => e.id === id);
+      if (storeEvent && confirm(`Publier "${storeEvent.title}" ?`)) {
+        storeEvent.status = 'PUBLISHED';
         activeTab.value = 'PUBLISHED';
       }
     };
